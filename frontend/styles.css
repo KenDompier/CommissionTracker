@@ -1,0 +1,95 @@
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+  font-family: sans-serif;
+  background-color: #c8b9e2;
+}
+
+.app {
+  height: 100%;
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f2fa;
+  border: 0.25rem solid #7523ce;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+#addNew {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgb(193, 151, 248);
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#myProgress {
+  width: 100%;
+  background-color: rgb(214, 218, 255);
+}
+
+#myBar {
+  height: 30px;
+  border-radius: 3px 5px 5px 3px;
+}
+
+#myProgressEdit {
+  width: 100%;
+  background-color: rgb(214, 218, 255);
+}
+
+#myBarEdit {
+  height: 30px;
+  border-radius: 3px 5px 5px 3px;
+}
+
+#myBarStored {
+  height: 30px;
+  border-radius: 3px 5px 5px 3px;
+}
+
+
+.fa-plus {
+  background-color: #dea5fb;
+  padding: 4px;
+  border: 0.15rem solid #000000;
+  border-radius: 4px;
+}
+
+#commissions {
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  overflow-y: auto;
+}
+
+#commissions div {
+  border: 3px solid #be8ae9;
+  border-radius: 6px;
+  padding: 5px;
+  display: grid;
+  gap: 4px;
+} 
+
+#commissions div .options {
+  justify-self: left;
+  display: flex;
+  gap: 25px;
+  padding-left: 20px;
+}
+
+#commissions div .options i {
+  cursor: pointer;
+}
+
+#msg {
+  color: red;
+}
