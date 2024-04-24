@@ -41,6 +41,9 @@ document.getElementById('myDateUpdate').addEventListener('change', function(even
   dateEdit = event.target.value;
 });
 
+// Event listener for the toggleSort button
+document.getElementById('toggleSort').addEventListener('click', sortCommissionsByStatus);
+
 // Listen for User Selection for Commission Status
 document.querySelector('[aria-labelledby="dropdownAdd"]').addEventListener('click', (e) => {
   //Add Commission: Modal Version
@@ -122,33 +125,45 @@ let addCommission = (title, description, status, width, color, date) => {
   xhr.send(JSON.stringify({ title, description, status , width, color, date}));
 };
 
-//Refresh Commissions
 let refreshCommissions = () => {
   commissions.innerHTML = '';
   data
-    .sort((a, b) => b.id - a.id)
-    .map((x) => {
-      return (commissions.innerHTML += `
+    .sort((a, b) => {
+      const statusOrder = {
+        'Paid / Starting': 1,
+        'Sketch Completed': 2,
+        'Lineart Completed': 3,
+        'Coloring Completed': 4,
+        'Completed': 5
+      };
+
+      // Determine if sorting should be ascending or descending
+      let sortOrder = document.getElementById('toggleSort').getAttribute('data-sort-order');
+      const ascending = sortOrder === 'asc';
+
+      const orderA = statusOrder[a.status];
+      const orderB = statusOrder[b.status];
+      return ascending ? orderA - orderB : orderB - orderA;
+    })
+    .forEach((x) => {
+      commissions.innerHTML += `
         <div id="commission-${x.id}">
           <span class="fw-bold fs-4">${x.title}</span>
           <pre class="text-secondary ps-12">${x.description}</pre>
-          <span class = "fs-6">Date Started: ${x.date}</span>
+          <span class="fs-6">Date Started: ${x.date}</span>
           <span class="fw-bold fs-5.2">${x.status}</span>
-
           <div id="myProgress">
-          <span id="myBarStored" style = "width: ${x.width}%; background-color: ${x.color};" ></div>
-        </span>
-  
+            <span id="myBarStored" style="width: ${x.width}%; background-color: ${x.color};"></div>
+          </span>
           <span class="options">
             <i onClick="tryEditCommission(${x.id})" data-bs-toggle="modal" data-bs-target="#modal-edit" class="fas fa-edit"></i>
             <i onClick="deleteCommission(${x.id})" class="fas fa-trash-alt"></i>
           </span>
         </div>
-    `);
+      `;
     });
-
-  resetForm();
 };
+
 
 //Try Edit Commission
 let tryEditCommission = (id) => {
@@ -361,4 +376,34 @@ function getBackgroundColor(option) {
   };
 
   return colorMap[option] || "gray"; // Default to gray if option not found
+}
+
+// Function to sort commissions based on status
+function sortCommissionsByStatus() {
+  // Map status to their corresponding order for sorting
+  const statusOrder = {
+    'Paid / Starting': 1,
+    'Sketch Completed': 2,
+    'Lineart Completed': 3,
+    'Coloring Completed': 4,
+    'Completed': 5
+  };
+
+  // Determine if sorting should be ascending or descending
+  let sortOrder = this.getAttribute('data-sort-order');
+  const ascending = sortOrder === 'asc';
+
+  // Toggle sort order
+  sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+  this.setAttribute('data-sort-order', sortOrder);
+
+  // Sort commissions based on status order and sort order
+  data.sort((a, b) => {
+    const orderA = statusOrder[a.status];
+    const orderB = statusOrder[b.status];
+    return ascending ? orderA - orderB : orderB - orderA;
+  });
+
+  // Refresh displayed commissions
+  refreshCommissions();
 }
