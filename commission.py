@@ -63,10 +63,15 @@ async def update_commission(commission: CommissionRequest, id: int) -> dict:
 
 @commission_router.delete("/commissions/{id}")
 async def delete_commission(id: int) -> dict:
+    global max_id
     for i in range(len(commission_list)):
         commission = commission_list[i]
         if commission.id == id:
             commission_list.pop(i)
+            # Adjust IDs of commissions following the deleted one
+            for j in range(i, len(commission_list)):
+                commission_list[j].id = j + 1
+            max_id -= 1  # Decrement max_id as one commission is deleted
             return {"message": f"The commission item with ID={id} has been deleted."}
 
     return {"message": f"The commission item with ID={id} is not found."}

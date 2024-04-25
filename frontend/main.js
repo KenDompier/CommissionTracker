@@ -24,13 +24,15 @@ let colorEdit;
 //Data/API
 let data = [];
 let selectedCommission = {};
+let selectedCommissionId; // To store the ID of the commission to be deleted
 const api = 'http://localhost:8000';
 
 function tryAdd() {
   let msg = document.getElementById('msg');
   msg.innerHTML = '';
 }
-//Listen for adding 
+
+// Listen for adding
 document.getElementById('addNew').addEventListener('click', () => {
   // Reset the name and description fields
   titleInput.value = '';
@@ -43,12 +45,12 @@ document.getElementById('addNew').addEventListener('click', () => {
   document.getElementById('myDate').value = '';
 });
 
-//Listen for Date Selection
+// Listen for Date Selection
 document.getElementById('myDate').addEventListener('change', function(event) {
   dateStarted = event.target.value;
 });
 
-//Listen for Date Selection - Edit/Update Modal
+// Listen for Date Selection - Edit/Update Modal
 document.getElementById('myDateUpdate').addEventListener('change', function(event) {
   dateEdit = event.target.value;
 });
@@ -58,59 +60,55 @@ document.getElementById('toggleSort').addEventListener('click', sortCommissionsB
 
 // Listen for User Selection for Commission Status
 document.querySelector('[aria-labelledby="dropdownAdd"]').addEventListener('click', (e) => {
-  //Add Commission: Modal Version
+  // Add Commission: Modal Version
   if (e.target.classList.contains('dropdown-item') && e.target.getAttribute('key') === '1') {
     statusChoice = e.target.innerText; 
 
     let value = e.target.getAttribute('value');
 
-  const progressBarWidths = {
-    1: "15", 
-    2: "25", 
-    3: "50",
-    4: "75",
-    5: "100"    
-  };
+    const progressBarWidths = {
+      1: "15", 
+      2: "25", 
+      3: "50",
+      4: "75",
+      5: "100"    
+    };
 
-  const colorMap = {
-    1: "red",
-    2: "yellow",
-    3: "teal",
-    4: "blue",
-    5: "green"
-  };
+    const colorMap = {
+      1: "red",
+      2: "yellow",
+      3: "teal",
+      4: "blue",
+      5: "green"
+    };
 
-  barPercent = progressBarWidths[value];
-  barColor = colorMap[value];
-}
+    barPercent = progressBarWidths[value];
+    barColor = colorMap[value];
+  }
 });
 
-//Add Commission: Form-Add
+// Add Commission: Form-Add
 document.getElementById('form-add').addEventListener('submit', (e) => {
   e.preventDefault();
 
   if (!titleInput.value) {
     document.getElementById('msg').innerHTML = 'Commission title cannot be blank';
-  }
-  else if(statusChoice === undefined)
-  {
+  } else if (statusChoice === undefined) {
     document.getElementById('msg').innerHTML = 'Commission status cannot be blank';
-  }
-   else {
-    if (dateStarted === undefined || dateStarted === '')
-    {
-      dateStarted = "N/A, Payment Recieved";
+  } else {
+    if (dateStarted === undefined || dateStarted === '') {
+      dateStarted = "N/A, Payment Received";
     }
     addCommission(titleInput.value, descInput.value, statusChoice, barPercent, barColor, dateStarted);
-    //Close Modal
+    // Close Modal
     let add = document.getElementById('add');
     add.setAttribute('data-bs-dismiss', 'modal');
     add.click();
     (() => {
       add.setAttribute('data-bs-dismiss', '');
     })();
-    
-    //Reset the Text and Progress Bar
+
+    // Reset the Text and Progress Bar
     document.getElementById('dropdownAdd').innerHTML = "Select a status";
     const myBar = document.getElementById("myBar")
     myBar.style.width = 0;
@@ -121,7 +119,7 @@ document.getElementById('form-add').addEventListener('submit', (e) => {
   }
 });
 
-//Add Commission 
+// Add Commission 
 let addCommission = (title, description, status, width, color, date) => {
   
   const xhr = new XMLHttpRequest();
@@ -137,6 +135,7 @@ let addCommission = (title, description, status, width, color, date) => {
   xhr.send(JSON.stringify({ title, description, status , width, color, date}));
 };
 
+// Refresh commissions list
 let refreshCommissions = () => {
   commissions.innerHTML = '';
   data
@@ -169,15 +168,14 @@ let refreshCommissions = () => {
           </span>
           <span class="options">
             <i onClick="tryEditCommission(${x.id})" data-bs-toggle="modal" data-bs-target="#modal-edit" class="fas fa-edit"></i>
-            <i onClick="deleteCommission(${x.id})" class="fas fa-trash-alt"></i>
+            <i onClick="confirmDeleteCommission(${x.id})" class="fas fa-trash-alt"></i>
           </span>
         </div>
       `;
     });
 };
 
-
-//Try Edit Commission
+// Try Edit Commission
 let tryEditCommission = (id) => {
   const commission = data.find((x) => x.id === id);
   selectedCommission = commission;
@@ -196,35 +194,35 @@ let tryEditCommission = (id) => {
   document.getElementById('msg').innerHTML = '';
 };
 
-//Update Modal Dropdown
+// Update Modal Dropdown
 document.querySelector('[aria-labelledby="dropdownEdit"]').addEventListener('click', (e) => {
 if (e.target.classList.contains('dropdown-item') && e.target.getAttribute('key') === '2') {
   statusEdit = e.target.innerText; 
 
   let value = e.target.getAttribute('value');
 
-const progressBarWidths = {
+  const progressBarWidths = {
     1: "15", 
     2: "25", 
     3: "50",
     4: "75",
     5: "100"  
-};
+  };
 
-const colorMap = {
-  1: "red",
-  2: "yellow",
-  3: "teal",
-  4: "blue",
-  5: "green"
-};
+  const colorMap = {
+    1: "red",
+    2: "yellow",
+    3: "teal",
+    4: "blue",
+    5: "green"
+  };
 
-percentEdit = progressBarWidths[value];
-colorEdit = colorMap[value];
+  percentEdit = progressBarWidths[value];
+  colorEdit = colorMap[value];
 }
 });
 
-//Form Update/Edit Submit
+// Form Update/Edit Submit
 document.getElementById('form-edit').addEventListener('submit', (e) => {
   e.preventDefault();
 
@@ -233,7 +231,7 @@ document.getElementById('form-edit').addEventListener('submit', (e) => {
   } else {
     editCommission(titleEditInput.value, descEditInput.value, statusEdit, percentEdit, colorEdit, dateEdit);
 
-    //Close Modal
+    // Close Modal
     let edit = document.getElementById('edit');
     edit.setAttribute('data-bs-dismiss', 'modal');
     edit.click();
@@ -241,7 +239,7 @@ document.getElementById('form-edit').addEventListener('submit', (e) => {
       edit.setAttribute('data-bs-dismiss', '');
     })();
 
-    //Reset Commission Status Selection
+    // Reset Commission Status Selection
     document.getElementById('dropdownAdd').innerHTML = "Select a status";
     const myBar = document.getElementById("myBar")
     myBar.style.width = 0;
@@ -268,7 +266,24 @@ let editCommission = (title, description, status, width, color, date) => {
   xhr.send(JSON.stringify({ title, description, status, width, color, date }));
 };
 
-let deleteCommission = (id) => {
+// Confirm delete commission
+function confirmDeleteCommission(id) {
+  selectedCommissionId = id;
+  let modalDelete = document.getElementById('modal-delete');
+  let modalInstance = new bootstrap.Modal(modalDelete);
+  modalInstance.show();
+}
+
+// Event listener for confirm delete button in the delete confirmation modal
+document.getElementById('confirm-delete').addEventListener('click', () => {
+  deleteCommission(selectedCommissionId);
+  let modalDelete = document.getElementById('modal-delete');
+  let modalInstance = bootstrap.Modal.getInstance(modalDelete);
+  modalInstance.hide();
+});
+
+// Function to delete a commission
+function deleteCommission(id) {
   const xhr = new XMLHttpRequest();
   xhr.onreadystatechange = () => {
     if (xhr.readyState == 4 && xhr.status == 200) {
@@ -278,7 +293,8 @@ let deleteCommission = (id) => {
   };
   xhr.open('DELETE', `${api}/commissions/${id}`, true);
   xhr.send();
-};
+}
+
 
 let resetForm = () => {
   titleInput.value = '';
@@ -304,7 +320,7 @@ let getCommissions = () => {
   getCommissions();
 })();
 
-//Add Modal Functions
+// Add Modal Functions
 function updateText(option) {
   const dropdownButton = document.getElementById("dropdownAdd");
 
@@ -319,7 +335,6 @@ function updateText(option) {
   dropdownButton.innerText = optionChoice[option];
   updateProgressBar(option);
 }
-
 
 function updateProgressBar(option) {
   const myBar = document.getElementById("myBar");
@@ -349,8 +364,7 @@ function getBackgroundColor(option) {
   return colorMap[option] || "gray"; // Default to gray if option not found
 }
 
-
-//Edit Modal Functions
+// Edit Modal Functions
 function updateTextEdit(option) {
   const dropdownButton = document.getElementById("dropdownEdit");
 
@@ -366,7 +380,7 @@ function updateTextEdit(option) {
   updateProgressBar2(option);
 }
 
-//Progress Bar in Edit/Update Modal
+// Progress Bar in Edit/Update Modal
 function updateProgressBar2(option) {
   const myBar = document.getElementById("myBarEdit");
   const progressBarWidths = {
@@ -375,14 +389,14 @@ function updateProgressBar2(option) {
     C: "50%",
     D: "75%",
     E: "100%"  
-};
+  };
 
   // Set the width and color based on the selected option
   myBar.style.width = progressBarWidths[option];
-  myBar.style.backgroundColor = getBackgroundColor(option);
+  myBar.style.backgroundColor = getBackgroundColor2(option);
 }
 
-function getBackgroundColor(option) {
+function getBackgroundColor2(option) {
   // Define color mappings based on options (you can customize this)
   const colorMap = {
       A: "red",
@@ -395,32 +409,17 @@ function getBackgroundColor(option) {
   return colorMap[option] || "gray"; // Default to gray if option not found
 }
 
-// Function to sort commissions based on status
+// Function to sort commissions by status
 function sortCommissionsByStatus() {
-  // Map status to their corresponding order for sorting
-  const statusOrder = {
-    'Paid / Starting': 1,
-    'Sketch Completed': 2,
-    'Lineart Completed': 3,
-    'Coloring Completed': 4,
-    'Completed': 5
-  };
-
-  // Determine if sorting should be ascending or descending
-  let sortOrder = this.getAttribute('data-sort-order');
-  const ascending = sortOrder === 'asc';
-
-  // Toggle sort order
+  // Get the current sort order
+  let sortOrder = document.getElementById('toggleSort').getAttribute('data-sort-order');
+  
+  // Toggle the sort order
   sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-  this.setAttribute('data-sort-order', sortOrder);
 
-  // Sort commissions based on status order and sort order
-  data.sort((a, b) => {
-    const orderA = statusOrder[a.status];
-    const orderB = statusOrder[b.status];
-    return ascending ? orderA - orderB : orderB - orderA;
-  });
+  // Update the data-sort-order attribute
+  document.getElementById('toggleSort').setAttribute('data-sort-order', sortOrder);
 
-  // Refresh displayed commissions
+  // Refresh the commissions list to apply the new sort order
   refreshCommissions();
 }
