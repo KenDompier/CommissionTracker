@@ -41,9 +41,12 @@ document.getElementById('addNew').addEventListener('click', () => {
   // Reset the commission status dropdown to its default value
   document.getElementById('dropdownAdd').innerText = 'Select a status';
 
-  // Reset the date input
-  document.getElementById('myDate').value = '';
+  // Set the date input to today's date
+  const today = new Date();
+  const formattedDate = today.toISOString().split('T')[0]; // Extract YYYY-MM-DD part
+  document.getElementById('myDate').value = formattedDate;
 });
+
 
 // Listen for Date Selection
 document.getElementById('myDate').addEventListener('change', function(event) {
@@ -135,7 +138,21 @@ let addCommission = (title, description, status, width, color, date) => {
   xhr.send(JSON.stringify({ title, description, status , width, color, date}));
 };
 
-// Refresh commissions list
+// Refresh commissions list// Listen for adding
+document.getElementById('addNew').addEventListener('click', () => {
+  // Reset the name and description fields
+  titleInput.value = '';
+  descInput.value = '';
+
+  // Reset the commission status dropdown to its default value
+  document.getElementById('dropdownAdd').innerText = 'Select a status';
+
+  // Set the date input to today's date
+  const today = new Date();
+  const formattedDate = today.toISOString().split('T')[0]; // Extract YYYY-MM-DD part
+  document.getElementById('myDate').value = formattedDate;
+});
+
 let refreshCommissions = () => {
   commissions.innerHTML = '';
   data
@@ -422,4 +439,5 @@ function sortCommissionsByStatus() {
 
   // Refresh the commissions list to apply the new sort order
   refreshCommissions();
+  
 }

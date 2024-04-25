@@ -94,3 +94,14 @@ body {
   color: red;
 }
 
+#commissions {
+  max-height: 750px; 
+  overflow-y: auto;
+}
+
+textarea {
+  margin-top: 5px;
+  white-space: pre-wrap;
+  overflow-wrap: break-word; 
+
+}
