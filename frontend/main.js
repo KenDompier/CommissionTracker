@@ -30,6 +30,18 @@ function tryAdd() {
   let msg = document.getElementById('msg');
   msg.innerHTML = '';
 }
+//Listen for adding 
+document.getElementById('addNew').addEventListener('click', () => {
+  // Reset the name and description fields
+  titleInput.value = '';
+  descInput.value = '';
+
+  // Reset the commission status dropdown to its default value
+  document.getElementById('dropdownAdd').innerText = 'Select a status';
+
+  // Reset the date input
+  document.getElementById('myDate').value = '';
+});
 
 //Listen for Date Selection
 document.getElementById('myDate').addEventListener('change', function(event) {
@@ -176,6 +188,11 @@ let tryEditCommission = (id) => {
   percentEdit = commission.width;
   colorEdit = commission.color;
   dateEdit= commission.date;
+  // Makes it so the date and commission status are put into the boxes when you edit
+  document.getElementById('myDateUpdate').value = commission.date;
+  // Set the commission status and update the progress bar color
+  document.getElementById('dropdownEdit').innerText = commission.status;
+  updateProgressBar2(commission.status);
   document.getElementById('msg').innerHTML = '';
 };
 
