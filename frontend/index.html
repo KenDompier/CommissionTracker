@@ -44,6 +44,9 @@
               <a class="nav-link active" aria-current="page" href="#">Home</a>
             </li>
             <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Request</a>
+            </li>
+            <li class="nav-item">
               <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#modal-login">Login</a>
             </li>
             
@@ -66,7 +69,10 @@
         <i class="fas fa-plus"></i>
       </button>
 
-      <h2 class="text-center my-3">Commissions <i id="toggleSort" class="fas fa-sort"></i> </h2>
+      <div id="commissions-header" class="d-flex justify-content-between align-items-center">
+        <h2 class="my-3">Commissions <i id="toggleSort" class="fas fa-sort"></i> </h2>
+        <button id="delete-all" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Delete Selected</button>
+      </div>
 
       <!-- This is where the commissions box is -->
       <div id="commissions"> 
@@ -95,7 +101,7 @@
           <div class="modal-body">
             <form id="form-add">
               <div id="msg"></div>
-              <label for="title">Type of Commission</label>
+              <label for="title">Commission</label>
               <input id="title" type="text" class="form-control" name="" />
 
               <label for="desc" class="mt-3">Description</label>
@@ -124,11 +130,16 @@
                        <a class="dropdown-item" value = '5' key = '1' onclick="updateText('E')">Completed</a>
                    </div>
                </div>
-               
+
                <div id="myProgress">
                  <div id="myBar"></div>
                </div>
 
+               <div class="mb-3">
+                <label for="image-upload">Upload Image</label>
+                <input type="file" class="form-control" id="image-upload" accept="image/*">
+              </div>
+              
               <div class="mt-3">
                 <button
                   type="button"
@@ -202,9 +213,13 @@
                   </div>
                 </div>
 
-
                 <div id="myProgress">
                   <div id="myBarEdit"></div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="image-upload-edit">Upload Image</label>
+                  <input type="file" class="form-control" id="image-upload-edit" accept="image/*">
                 </div>
 
                 <button
@@ -223,6 +238,7 @@
         </div>
       </div>
     </div>
+    
 
   <!-- Modal for deleting a Commission -->
 <div class="modal fade" id="modal-delete" tabindex="-1" aria-labelledby="modal-delete-title" aria-hidden="true">
@@ -242,6 +258,7 @@
     </div>
   </div>
 </div>
+
 
 <!-- Modal for Login -->
 <div class="modal fade" id="modal-login" tabindex="-1" aria-labelledby="modal-login-title" aria-hidden="true">
@@ -275,5 +292,7 @@
       integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
       crossorigin="anonymous"
     ></script>
+    
+    
   </body>
 </html>

@@ -34,12 +34,6 @@ function tryAdd() {
 
 // Listen for adding
 document.getElementById('addNew').addEventListener('click', () => {
-  // Reset the name and description fields
-  titleInput.value = '';
-  descInput.value = '';
-
-  // Reset the commission status dropdown to its default value
-  document.getElementById('dropdownAdd').innerText = 'Select a status';
 
   // Set the date input to today's date
   const today = new Date();
@@ -58,8 +52,27 @@ document.getElementById('myDateUpdate').addEventListener('change', function(even
   dateEdit = event.target.value;
 });
 
+// Add event listener for file input change in "Add New Commission" modal
+document.getElementById('image-upload').addEventListener('change', function(event) {
+  handleImageUpload(event.target.files[0], 'add');
+});
+
+// Add event listener for file input change in "Edit Commission" modal
+document.getElementById('image-upload-edit').addEventListener('change', function(event) {
+  handleImageUpload(event.target.files[0], 'edit');
+});
+
+
 // Event listener for the toggleSort button
 document.getElementById('toggleSort').addEventListener('click', sortCommissionsByStatus);
+
+// Add event listener for the delete all button
+document.getElementById('delete-all').addEventListener('click', () => {
+  // Call the confirmDeleteCommission function to confirm deletion
+  confirmDeleteCommission();
+});
+
+
 
 // Listen for User Selection for Commission Status
 document.querySelector('[aria-labelledby="dropdownAdd"]').addEventListener('click', (e) => {
@@ -112,8 +125,8 @@ document.getElementById('form-add').addEventListener('submit', (e) => {
     })();
 
     // Reset the Text and Progress Bar
-    document.getElementById('dropdownAdd').innerHTML = "Select a status";
     const myBar = document.getElementById("myBar")
+    statusChoice = undefined;
     myBar.style.width = 0;
     myBar.style.backgroundColor = "gray";
     const dateInput = document.getElementById('myDate');
@@ -146,6 +159,7 @@ document.getElementById('addNew').addEventListener('click', () => {
 
   // Reset the commission status dropdown to its default value
   document.getElementById('dropdownAdd').innerText = 'Select a status';
+  statusChoice = undefined;
 
   // Set the date input to today's date
   const today = new Date();
@@ -185,7 +199,7 @@ let refreshCommissions = () => {
           </span>
           <span class="options">
             <i onClick="tryEditCommission(${x.id})" data-bs-toggle="modal" data-bs-target="#modal-edit" class="fas fa-edit"></i>
-            <i onClick="confirmDeleteCommission(${x.id})" class="fas fa-trash-alt"></i>
+            <input type="checkbox" class="commission-checkbox" id="checkbox-${x.id}">
           </span>
         </div>
       `;
@@ -283,17 +297,62 @@ let editCommission = (title, description, status, width, color, date) => {
   xhr.send(JSON.stringify({ title, description, status, width, color, date }));
 };
 
+// Track selected checkboxes
+document.querySelectorAll('.commission-checkbox').forEach((checkbox) => {
+  checkbox.addEventListener('change', () => {
+    if (checkbox.checked) {
+      // Checkbox is checked
+      // Handle logic to track selected commission
+    } else {
+      // Checkbox is unchecked
+      // Handle logic to untrack selected commission
+    }
+  });
+});
+
 // Confirm delete commission
-function confirmDeleteCommission(id) {
-  selectedCommissionId = id;
-  let modalDelete = document.getElementById('modal-delete');
-  let modalInstance = new bootstrap.Modal(modalDelete);
+function confirmDeleteCommission() {
+  // Get the number of selected commissions
+  const selectedCount = document.querySelectorAll('.commission-checkbox:checked').length;
+  
+  // Update modal title and confirmation message based on the number of selected commissions
+  const modalDelete = document.getElementById('modal-delete');
+  const modalTitle = document.getElementById('modal-delete-title');
+  const modalBody = document.querySelector('#modal-delete .modal-body p');
+  
+  if (selectedCount === 1) {
+    modalTitle.textContent = 'Confirm Deletion';
+    modalBody.textContent = 'Are you sure you want to delete this commission?';
+  } else {
+    modalTitle.textContent = `Confirm Deletion (${selectedCount} commissions)`;
+    modalBody.textContent = `Are you sure you want to delete these ${selectedCount} commissions?`;
+  }
+  
+  // Show the modal
+  const modalInstance = new bootstrap.Modal(modalDelete);
   modalInstance.show();
 }
 
 // Event listener for confirm delete button in the delete confirmation modal
 document.getElementById('confirm-delete').addEventListener('click', () => {
-  deleteCommission(selectedCommissionId);
+  // Array to store IDs of selected commissions
+  const selectedIds = [];
+  
+  // Iterate over checkboxes to find selected commissions
+  document.querySelectorAll('.commission-checkbox').forEach((checkbox) => {
+    if (checkbox.checked) {
+      // Extract commission ID from checkbox ID
+      const id = checkbox.id.split('-')[1];
+      selectedIds.push(id);
+    }
+  });
+  
+  // Delete selected commissions
+  selectedIds.forEach((id) => {
+    deleteCommission(id);
+  });
+
+  // Close modal
   let modalDelete = document.getElementById('modal-delete');
   let modalInstance = bootstrap.Modal.getInstance(modalDelete);
   modalInstance.hide();
@@ -426,6 +485,36 @@ function getBackgroundColor2(option) {
   return colorMap[option] || "gray"; // Default to gray if option not found
 }
 
+// Function to handle image upload
+function handleImageUpload(file, mode) {
+  const formData = new FormData();
+  formData.append('image', file);
+
+  // Make an AJAX request to upload the image
+  const xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = () => {
+    if (xhr.readyState === 4) {
+      if (xhr.status === 200) {
+        // Image uploaded successfully
+        const imageUrl = xhr.responseText;
+        if (mode === 'add') {
+          // Update the URL or any other relevant attribute for the new commission
+          document.getElementById('desc').value += `\n\nImage URL: ${imageUrl}`;
+        } else if (mode === 'edit') {
+          // Update the URL or any other relevant attribute for the edited commission
+          document.getElementById('desc-edit').value += `\n\nImage URL: ${imageUrl}`;
+        }
+      } else {
+        // Handle error
+        console.error('Failed to upload image.');
+      }
+    }
+  };
+  xhr.open('POST', '/upload-image', true); // Adjust the endpoint URL for image upload
+  xhr.send(formData);
+}
+
+
 // Function to sort commissions by status
 function sortCommissionsByStatus() {
   // Get the current sort order
@@ -441,3 +530,4 @@ function sortCommissionsByStatus() {
   refreshCommissions();
   
 }
+
