@@ -146,8 +146,12 @@ document.getElementById('form-add').addEventListener('submit', (e) => {
   }
 });
 
-// Add Commission 
 let addCommission = (title, description, status, width, color, date, deadline) => {
+  // Check if the deadline is undefined and set it to "N/A"
+  if (deadline === undefined) {
+    deadline = "N/A";
+  }
+
   const xhr = new XMLHttpRequest();
   xhr.onreadystatechange = () => {
     if (xhr.readyState == 4 && xhr.status == 201) {
@@ -160,6 +164,7 @@ let addCommission = (title, description, status, width, color, date, deadline) =
   xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
   xhr.send(JSON.stringify({ title, description, status , width, color, date, deadline }));
 };
+
 
 // Refresh commissions list// Listen for adding
 document.getElementById('addNew').addEventListener('click', () => {
@@ -175,6 +180,7 @@ document.getElementById('addNew').addEventListener('click', () => {
   const today = new Date();
   const formattedDate = today.toISOString().split('T')[0]; // Extract YYYY-MM-DD part
   document.getElementById('myDate').value = formattedDate;
+  document.getElementById('deadline').value = ''; // Set deadline input to blank
 });
 
 let refreshCommissions = () => {
