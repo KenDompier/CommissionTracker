@@ -38,13 +38,22 @@ function tryAdd() {
 
 // Listen for adding
 document.getElementById('addNew').addEventListener('click', () => {
+  // Reset the name and description fields
+  titleInput.value = '';
+  descInput.value = '';
 
-// Set the date input to today's date
-const today = new Date();
+  // Reset the commission status dropdown to its default value
+  document.getElementById('dropdownAdd').innerText = 'Select a status';
+  statusChoice = undefined;
+
+  // Set the date input to today's date
+  const today = new Date();
   const formattedDate = today.toISOString().split('T')[0]; // Extract YYYY-MM-DD part
   document.getElementById('myDate').value = formattedDate;
-});
 
+  // Set the deadline input to blank
+  document.getElementById('deadline').value = '';
+});
 
 // Listen for Date Selection
 document.getElementById('myDate').addEventListener('change', function(event) {
