@@ -521,8 +521,17 @@ let totalUploadSize = 0;
 function handleImageUpload(file, mode) {
   // Check if the file size exceeds the limit (20 MB = 20 * 1024 * 1024 bytes)
   const maxSize = 20 * 1024 * 1024; // 20 MB
-  if ((totalUploadSize + file.size) > maxSize) {
+  if (file.size > maxSize) {
     console.error('File size exceeds the limit of 20 MB.');
+    // Display an error message to the user
+    alert('File size exceeds the limit of 20 MB. Please choose a smaller file.');
+    
+    // Reset the file input element
+    const fileInput = document.getElementById('image-upload');
+    fileInput.value = ''; // Reset the value to clear the file selection
+    fileInput.type = 'text'; // Change the input type to text
+    fileInput.type = 'file'; // Change it back to file, this effectively resets it
+
     return;
   }
 
