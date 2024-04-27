@@ -22,7 +22,7 @@ async def add_commission(commission: CommissionRequest) -> dict:
         width=commission.width,
         color=commission.color,
         date=commission.date,
-        due = commission.due
+        deadline = commission.deadline
 
     )
     commission_list.append(newCommission)
@@ -58,7 +58,7 @@ async def update_commission(commission: CommissionRequest, id: int) -> dict:
             x.width = commission.width
             x.color = commission.color
             x.date = commission.date
-            x.due = commission.due
+            x.deadline = commission.deadline
             return {"message": "Commission updated successfully"}
 
     return {"message": f"The commission item with ID={id} is not found."}
