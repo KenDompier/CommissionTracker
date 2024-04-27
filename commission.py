@@ -22,6 +22,8 @@ async def add_commission(commission: CommissionRequest) -> dict:
         width=commission.width,
         color=commission.color,
         date=commission.date,
+        due = commission.due
+
     )
     commission_list.append(newCommission)
     json_compatible_item_data = newCommission.model_dump()
@@ -56,6 +58,7 @@ async def update_commission(commission: CommissionRequest, id: int) -> dict:
             x.width = commission.width
             x.color = commission.color
             x.date = commission.date
+            x.due = commission.due
             return {"message": "Commission updated successfully"}
 
     return {"message": f"The commission item with ID={id} is not found."}

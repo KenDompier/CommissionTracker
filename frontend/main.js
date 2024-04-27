@@ -11,6 +11,10 @@ let descEditInput = document.getElementById('desc-edit');
 //Date Input
 let dateStarted;
 let dateEdit;
+// Deadline Dates
+let deadline;
+let deadlineEdit;
+
 
 //Commission Status from User (Dropdown Box Selection)
 let statusChoice; //The Text Status
@@ -35,8 +39,8 @@ function tryAdd() {
 // Listen for adding
 document.getElementById('addNew').addEventListener('click', () => {
 
-  // Set the date input to today's date
-  const today = new Date();
+// Set the date input to today's date
+const today = new Date();
   const formattedDate = today.toISOString().split('T')[0]; // Extract YYYY-MM-DD part
   document.getElementById('myDate').value = formattedDate;
 });
@@ -52,6 +56,16 @@ document.getElementById('myDateUpdate').addEventListener('change', function(even
   dateEdit = event.target.value;
 });
 
+// Listen for Deadline Selection when Adding Commission
+document.getElementById('deadline').addEventListener('change', function(event) {
+  deadline = event.target.value;
+});
+
+// Listen for Deadline Selection in Edit Modal
+document.getElementById('deadlineUpdate').addEventListener('change', function(event) {
+  deadlineEdit = event.target.value;
+});
+
 // Add event listener for file input change in "Add New Commission" modal
 document.getElementById('image-upload').addEventListener('change', function(event) {
   handleImageUpload(event.target.files[0], 'add');
@@ -62,7 +76,6 @@ document.getElementById('image-upload-edit').addEventListener('change', function
   handleImageUpload(event.target.files[0], 'edit');
 });
 
-
 // Event listener for the toggleSort button
 document.getElementById('toggleSort').addEventListener('click', sortCommissionsByStatus);
 
@@ -71,8 +84,6 @@ document.getElementById('delete-all').addEventListener('click', () => {
   // Call the confirmDeleteCommission function to confirm deletion
   confirmDeleteCommission();
 });
-
-
 
 // Listen for User Selection for Commission Status
 document.querySelector('[aria-labelledby="dropdownAdd"]').addEventListener('click', (e) => {
@@ -115,7 +126,7 @@ document.getElementById('form-add').addEventListener('submit', (e) => {
     if (dateStarted === undefined || dateStarted === '') {
       dateStarted = "N/A, Payment Received";
     }
-    addCommission(titleInput.value, descInput.value, statusChoice, barPercent, barColor, dateStarted);
+    addCommission(titleInput.value, descInput.value, statusChoice, barPercent, barColor, dateStarted, deadline);
     // Close Modal
     let add = document.getElementById('add');
     add.setAttribute('data-bs-dismiss', 'modal');
@@ -136,8 +147,7 @@ document.getElementById('form-add').addEventListener('submit', (e) => {
 });
 
 // Add Commission 
-let addCommission = (title, description, status, width, color, date) => {
-  
+let addCommission = (title, description, status, width, color, date, deadline) => {
   const xhr = new XMLHttpRequest();
   xhr.onreadystatechange = () => {
     if (xhr.readyState == 4 && xhr.status == 201) {
@@ -148,7 +158,7 @@ let addCommission = (title, description, status, width, color, date) => {
   };
   xhr.open('POST', `${api}/commissions`, true);
   xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.send(JSON.stringify({ title, description, status , width, color, date}));
+  xhr.send(JSON.stringify({ title, description, status , width, color, date, deadline }));
 };
 
 // Refresh commissions list// Listen for adding
@@ -193,18 +203,22 @@ let refreshCommissions = () => {
           <span class="fw-bold fs-4">${x.title}</span>
           <pre class="text-secondary ps-12">${x.description}</pre>
           <span class="fs-6">Date Started: ${x.date}</span>
+          <span class="fs-6">Deadline: ${x.deadline ? x.deadline : 'N/A'}</span>
           <span class="fw-bold fs-5.2">${x.status}</span>
           <div id="myProgress">
             <span id="myBarStored" style="width: ${x.width}%; background-color: ${x.color};"></div>
           </span>
           <span class="options">
             <i onClick="tryEditCommission(${x.id})" data-bs-toggle="modal" data-bs-target="#modal-edit" class="fas fa-edit"></i>
+            <i class="fas fa-flag" onClick="toggleFlag(${x.id})" style="color: ${x.flagged ? 'red' : 'gray'};"></i>
             <input type="checkbox" class="commission-checkbox" id="checkbox-${x.id}">
+          </span>
           </span>
         </div>
       `;
     });
 };
+
 
 // Try Edit Commission
 let tryEditCommission = (id) => {
@@ -217,7 +231,9 @@ let tryEditCommission = (id) => {
   percentEdit = commission.width;
   colorEdit = commission.color;
   dateEdit= commission.date;
+  deadlineEdit =  commission.deadline;
   // Makes it so the date and commission status are put into the boxes when you edit
+
   document.getElementById('myDateUpdate').value = commission.date;
   // Set the commission status and update the progress bar color
   document.getElementById('dropdownEdit').innerText = commission.status;
@@ -260,7 +276,7 @@ document.getElementById('form-edit').addEventListener('submit', (e) => {
   if (!titleEditInput.value) {
     msg.innerHTML = 'Commission cannot be blank';
   } else {
-    editCommission(titleEditInput.value, descEditInput.value, statusEdit, percentEdit, colorEdit, dateEdit);
+    editCommission(titleEditInput.value, descEditInput.value, statusEdit, percentEdit, colorEdit, dateEdit, deadlineEdit);
 
     // Close Modal
     let edit = document.getElementById('edit');
@@ -279,7 +295,7 @@ document.getElementById('form-edit').addEventListener('submit', (e) => {
 });
 
 
-let editCommission = (title, description, status, width, color, date) => {
+let editCommission = (title, description, status, width, color, date, deadline) => {
   const xhr = new XMLHttpRequest();
   xhr.onreadystatechange = () => {
     if (xhr.readyState == 4 && xhr.status == 200) {
@@ -289,13 +305,15 @@ let editCommission = (title, description, status, width, color, date) => {
       selectedCommission.width = width;
       selectedCommission.color = color;
       selectedCommission.date = date;
+      selectedCommission.deadline = deadline; 
       refreshCommissions();
     }
   };
   xhr.open('PUT', `${api}/commissions/${selectedCommission.id}`, true);
   xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.send(JSON.stringify({ title, description, status, width, color, date }));
+  xhr.send(JSON.stringify({ title, description, status, width, color, date, deadline }));
 };
+
 
 // Listen for changes on a common parent element
 document.getElementById('commissions').addEventListener('change', (event) => {
@@ -398,8 +416,6 @@ function deleteCommission(id) {
   xhr.open('DELETE', `${api}/commissions/${id}`, true);
   xhr.send();
 }
-
-
 
 let resetForm = () => {
   titleInput.value = '';
@@ -564,6 +580,33 @@ function handleImageUpload(file, mode) {
   xhr.send(formData);
 }
 
+// Add a toggleFlag function
+function toggleFlag(id) {
+  const commission = data.find((x) => x.id === id);
+  commission.flagged = !commission.flagged; // Toggle the flagged status
+  refreshCommissions(); // Refresh the commission list to reflect the changes
+}
+
+// Calculate approaching deadlines and flag commissions accordingly
+function flagApproachingDeadlines() {
+  const approachingThreshold = 7; // Define the threshold in days
+  const today = new Date();
+
+  data.forEach(commission => {
+    const deadlineDate = new Date(commission.deadline);
+    const timeDiff = deadlineDate.getTime() - today.getTime();
+    const daysUntilDeadline = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+    // If the deadline is approaching, flag the commission
+    if (daysUntilDeadline <= approachingThreshold) {
+      commission.flagged = true;
+    } else {
+      commission.flagged = false;
+    }
+  });
+
+  refreshCommissions(); // Refresh the commission list to reflect the changes
+}
 
 
 // Function to sort commissions by status

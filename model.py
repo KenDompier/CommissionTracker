@@ -9,6 +9,7 @@ class Commission(BaseModel):
     width: str
     color: str
     date: str
+    deadline: str
 
 
 class CommissionRequest(BaseModel):
@@ -18,3 +19,4 @@ class CommissionRequest(BaseModel):
     width: str
     color: str
     date: str
+    deadline: str
