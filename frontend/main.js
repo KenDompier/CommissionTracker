@@ -297,18 +297,32 @@ let editCommission = (title, description, status, width, color, date) => {
   xhr.send(JSON.stringify({ title, description, status, width, color, date }));
 };
 
-// Track selected checkboxes
-document.querySelectorAll('.commission-checkbox').forEach((checkbox) => {
-  checkbox.addEventListener('change', () => {
-    if (checkbox.checked) {
-      // Checkbox is checked
-      // Handle logic to track selected commission
-    } else {
-      // Checkbox is unchecked
-      // Handle logic to untrack selected commission
-    }
-  });
+// Listen for changes on a common parent element
+document.getElementById('commissions').addEventListener('change', (event) => {
+  // Check if the changed element is a checkbox
+  if (event.target.classList.contains('commission-checkbox')) {
+    updateDeleteButtonState();
+  }
 });
+
+// Function to update the state of the "Delete Selected" button
+function updateDeleteButtonState() {
+  const deleteButton = document.getElementById('delete-all');
+  const anyChecked = document.querySelector('.commission-checkbox:checked');
+
+  if (anyChecked) {
+    deleteButton.removeAttribute('disabled');
+  } else {
+    deleteButton.setAttribute('disabled', true);
+  }
+}
+
+// Initial state check when the page loads
+updateDeleteButtonState();
+
+
+// Initial state check when the page loads
+updateDeleteButtonState();
 
 // Confirm delete commission
 function confirmDeleteCommission() {
@@ -358,18 +372,33 @@ document.getElementById('confirm-delete').addEventListener('click', () => {
   modalInstance.hide();
 });
 
-// Function to delete a commission
 function deleteCommission(id) {
   const xhr = new XMLHttpRequest();
   xhr.onreadystatechange = () => {
-    if (xhr.readyState == 4 && xhr.status == 200) {
-      data = data.filter((x) => x.id !== id);
-      refreshCommissions();
+    if (xhr.readyState === 4) {
+      if (xhr.status === 200) {
+        console.log('Commission successfully deleted from server.');
+        // Remove the commission from the data array
+        data = data.filter((x) => x.id !== id);
+
+        // Remove the corresponding HTML element from the DOM
+        const commissionElement = document.getElementById(`commission-${id}`);
+        if (commissionElement) {
+          commissionElement.remove();
+          console.log('Commission HTML element removed.');
+        }
+
+        // Update the state of the "Delete Selected" button
+        updateDeleteButtonState();
+      } else {
+        console.error('Failed to delete commission. Status:', xhr.status);
+      }
     }
   };
   xhr.open('DELETE', `${api}/commissions/${id}`, true);
   xhr.send();
 }
+
 
 
 let resetForm = () => {
@@ -485,8 +514,18 @@ function getBackgroundColor2(option) {
   return colorMap[option] || "gray"; // Default to gray if option not found
 }
 
+// Define a variable to track the total size of uploaded files
+let totalUploadSize = 0;
+
 // Function to handle image upload
 function handleImageUpload(file, mode) {
+  // Check if the file size exceeds the limit (20 MB = 20 * 1024 * 1024 bytes)
+  const maxSize = 20 * 1024 * 1024; // 20 MB
+  if ((totalUploadSize + file.size) > maxSize) {
+    console.error('File size exceeds the limit of 20 MB.');
+    return;
+  }
+
   const formData = new FormData();
   formData.append('image', file);
 
@@ -504,6 +543,8 @@ function handleImageUpload(file, mode) {
           // Update the URL or any other relevant attribute for the edited commission
           document.getElementById('desc-edit').value += `\n\nImage URL: ${imageUrl}`;
         }
+        // Update the total upload size
+        totalUploadSize += file.size;
       } else {
         // Handle error
         console.error('Failed to upload image.');
@@ -513,6 +554,7 @@ function handleImageUpload(file, mode) {
   xhr.open('POST', '/upload-image', true); // Adjust the endpoint URL for image upload
   xhr.send(formData);
 }
+
 
 
 // Function to sort commissions by status
@@ -530,4 +572,3 @@ function sortCommissionsByStatus() {
   refreshCommissions();
   
 }
-
