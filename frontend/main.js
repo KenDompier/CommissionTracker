@@ -596,33 +596,36 @@ function handleImageUpload(file, mode) {
   xhr.send(formData);
 }
 
+
 // Add a toggleFlag function
 function toggleFlag(id) {
   const commission = data.find((x) => x.id === id);
   commission.flagged = !commission.flagged; // Toggle the flagged status
-  refreshCommissions(); // Refresh the commission list to reflect the changes
+
+  // Update the flag status in localStorage
+  localStorage.setItem(`commission-${id}-flagged`, commission.flagged ? 'true' : 'false');
+
+  refreshCommissions(); 
 }
 
-// Calculate approaching deadlines and flag commissions accordingly
-function flagApproachingDeadlines() {
-  const approachingThreshold = 7; // Define the threshold in days
-  const today = new Date();
-
+// Function to load flagged status from localStorage when the page loads
+function loadFlaggedStatus() {
   data.forEach(commission => {
-    const deadlineDate = new Date(commission.deadline);
-    const timeDiff = deadlineDate.getTime() - today.getTime();
-    const daysUntilDeadline = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-    // If the deadline is approaching, flag the commission
-    if (daysUntilDeadline <= approachingThreshold) {
+    const flaggedStatus = localStorage.getItem(`commission-${commission.id}-flagged`);
+    if (flaggedStatus === 'true') {
       commission.flagged = true;
     } else {
       commission.flagged = false;
     }
   });
 
-  refreshCommissions(); // Refresh the commission list to reflect the changes
+  refreshCommissions(); 
 }
+
+// Call the loadFlaggedStatus function when the page loads
+window.addEventListener('load', loadFlaggedStatus);
+
+
 
 // Function to sort commissions by status
 function sortCommissionsByStatus() {
