@@ -235,7 +235,6 @@ let refreshCommissions = () => {
 };
 
 
-// Try Edit Commission
 let tryEditCommission = (id) => {
   const commission = data.find((x) => x.id === id);
   selectedCommission = commission;
@@ -247,14 +246,16 @@ let tryEditCommission = (id) => {
   colorEdit = commission.color;
   dateEdit= commission.date;
   deadlineEdit =  commission.deadline;
-  // Makes it so the date and commission status are put into the boxes when you edit
 
+  // Update the deadline date selection to the selected deadline date
+  document.getElementById('deadlineUpdate').value = commission.deadline || ''; 
   document.getElementById('myDateUpdate').value = commission.date;
   // Set the commission status and update the progress bar color
   document.getElementById('dropdownEdit').innerText = commission.status;
   updateProgressBar2(commission.status);
   document.getElementById('msg').innerHTML = '';
 };
+
 
 // Update Modal Dropdown
 document.querySelector('[aria-labelledby="dropdownEdit"]').addEventListener('click', (e) => {
@@ -622,7 +623,6 @@ function flagApproachingDeadlines() {
 
   refreshCommissions(); // Refresh the commission list to reflect the changes
 }
-
 
 // Function to sort commissions by status
 function sortCommissionsByStatus() {
