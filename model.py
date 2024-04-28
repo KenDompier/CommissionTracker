@@ -1,8 +1,9 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Commission(BaseModel):
-    id: int
+    _id: str
+    mongodb_id: str = Field(alias="_id")
     title: str
     description: str
     status: str
@@ -18,3 +19,8 @@ class CommissionRequest(BaseModel):
     width: str
     color: str
     date: str
+
+
+class User(BaseModel):
+    username: str
+    password: str

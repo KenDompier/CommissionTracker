@@ -1,6 +1,6 @@
 //Commission Base
-let commissionId = document.getElementById('commission-id');
 let commissions = document.getElementById('commissions');
+let commissionId = document.getElementById('commission-id');
 
 //Text Inputs from User (TextBoxes)
 let titleInput = document.getElementById('title');
@@ -24,12 +24,196 @@ let colorEdit;
 //Data/API
 let data = [];
 let selectedCommission = {};
-const api = 'http://localhost:8000';
+const api = 'http://127.0.0.1:8000';
+
 
 function tryAdd() {
   let msg = document.getElementById('msg');
   msg.innerHTML = '';
 }
+
+function logCommissionIds(commissions) {
+  // Check if 'commissions' is an object and has a 'commissions' key
+  if (commissions && commissions.commissions && Array.isArray(commissions.commissions)) {
+    commissions.commissions.forEach(commission => {
+      console.log(commission._id);
+    });
+  } else {
+    console.error('Invalid commissions data:', commissions);
+  }
+}
+
+
+//MONGODB THINGS
+// Function to fetch commissions from the backend
+async function getCommissions() {
+  try {
+    const response = await fetch(`${api}/commissions`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch commissions');
+    }
+    const commissions = await response.json();
+    // logCommissionIds(commissions);
+    data = commissions.commissions;
+    console.log(commissions);
+    refreshCommissions();
+  } catch (error) {
+    console.error('Error fetching commissions:', error);
+  }
+}
+
+// async function getCommissions() {
+//   try {
+//     const response = await fetch(`${api}/commissions`);
+//     if (!response.ok) {
+//       throw new Error('Failed to fetch commissions');
+//     }
+//     const commissions = await response.json();
+
+//     // Convert the ObjectId to a string for each commission
+//     commissions.commissions.forEach((commission) => {
+//       commission._id = commission._id.toString();
+//     });
+
+//     logCommissionIds(commissions);
+//     data = commissions.commissions;
+//     console.log(commissions);
+//     refreshCommissions();
+//   } catch (error) {
+//     console.error('Error fetching commissions:', error);
+//   }
+// }
+
+
+// Function to refresh commissions on the UI
+function refreshCommissions() {
+  console.log(data);
+  commissions.innerHTML = '';
+  Array.from(data).forEach((x) => {
+    // const id = x._id ? x._id.toString() : '';
+    console.log(x._id);
+    commissions.innerHTML += `
+      <div id="commission-${x._id}">
+        <span class="fw-bold fs-4">${x.title}</span>
+        <pre class="text-secondary ps-12">${x.description}</pre>
+        <span class="fs-6">Date Started: ${x.date}</span>
+        <span class="fw-bold fs-5.2">${x.status}</span>
+        <div id="myProgress">
+          <span id="myBarStored" style="width: ${x.width}%; background-color: ${x.color};"></span>
+        </div>
+        <span class="options">
+          <i onClick="tryEditCommission('${x._id}')" data-bs-toggle="modal" data-bs-target="#modal-edit" class="fas fa-edit"></i>
+          <i onClick="deleteCommission('${x._id}')" class="fas fa-trash-alt"></i>
+        </span>
+      </div>
+    `;
+  });
+  resetForm();
+}
+
+async function tryEditCommission(id) {
+  // Find the commission with the specified ID
+  const commission = data.find(obj => obj._id === id);
+
+  // Populate the modal with the commission details
+  document.getElementById('title-edit').value = commission.title;
+  document.getElementById('desc-edit').value = commission.description;
+  document.getElementById('myDateUpdate').value = commission.date;
+  document.getElementById('dropdownEdit').innerText = commission.status;
+  
+  const myBarEdit = document.getElementById("myBarEdit");
+  myBarEdit.style.width = commission.width + '%';
+  myBarEdit.style.backgroundColor = commission.color;
+
+  // Set the commission ID in the modal title
+  document.getElementById('commission-id').textContent = id;
+
+  // Add event listener for the form submission
+  const formEdit = document.getElementById('form-edit');
+  formEdit.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const selectedStatus = document.getElementById('dropdownEdit').innerText.trim();
+
+    console.log(selectedStatus);
+       // Map the selected status value to the corresponding key
+
+    const updatedCommission = {
+      title: document.getElementById('title-edit').value,
+      description: document.getElementById('desc-edit').value,
+      status: selectedStatus,
+      width: document.getElementById('myBarEdit').style.width.replace('%', ''),
+      color: document.getElementById('myBarEdit').style.backgroundColor,
+      date: document.getElementById('myDateUpdate').value,
+    };
+
+    console.log(updatedCommission)
+
+    try {
+      // Send a PUT request to update the commission in the database
+      const response = await fetch(`/commissions/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedCommission),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update commission');
+      }
+
+      // Refresh the commissions list after updating
+      await refreshCommissions();
+    } catch (error) {
+      console.error('Error updating commission:', error);
+      // Handle error
+    }
+  });
+}
+
+
+// Function to get status text based on option key
+function getStatusText(option) {
+  const optionChoice = {
+    A: 'Paid / Starting', 
+    B: 'Sketch Completed', 
+    C: 'Lineart Completed',  
+    D: 'Coloring Completed', 
+    E: 'Completed', 
+  };
+  return optionChoice[option] || 'Select a status';
+}
+
+// Function to delete a commission
+async function deleteCommission(id) {
+  console.log(`${api}/commissions/${id}`);
+  try {
+    const response = await fetch(`${api}/commissions/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      throw new Error('Failed to delete commission');
+    }
+    data = data.filter((x) => x._id !== id);
+    refreshCommissions();
+  } catch (error) {
+    console.error('Error deleting commission:', error);
+  }
+}
+
+
+// Function to reset form inputs
+function resetForm() {
+  titleInput.value = '';
+  descInput.value = '';
+  statusChoice = undefined;
+  barPercent = '0';
+  barColor = 'gray';
+}
+
+// Initialize by fetching commissions
+getCommissions();
 
 //Listen for Date Selection
 document.getElementById('myDate').addEventListener('change', function(event) {
@@ -70,208 +254,66 @@ document.querySelector('[aria-labelledby="dropdownAdd"]').addEventListener('clic
 }
 });
 
-//Add Commission: Form-Add
-document.getElementById('form-add').addEventListener('submit', (e) => {
+document.getElementById('form-add').addEventListener('submit', async (e) => {
   e.preventDefault();
 
   if (!titleInput.value) {
     document.getElementById('msg').innerHTML = 'Commission title cannot be blank';
-  }
-  else if(statusChoice === undefined)
-  {
+  } else if (statusChoice === undefined) {
     document.getElementById('msg').innerHTML = 'Commission status cannot be blank';
-  }
-   else {
-    if (dateStarted === undefined || dateStarted === '')
-    {
-      dateStarted = "N/A, Payment Recieved";
-    }
-    addCommission(titleInput.value, descInput.value, statusChoice, barPercent, barColor, dateStarted);
-    //Close Modal
-    let add = document.getElementById('add');
-    add.setAttribute('data-bs-dismiss', 'modal');
-    add.click();
-    (() => {
-      add.setAttribute('data-bs-dismiss', '');
-    })();
-    
-    //Reset the Text and Progress Bar
-    document.getElementById('dropdownAdd').innerHTML = "Select a status";
-    const myBar = document.getElementById("myBar")
-    myBar.style.width = 0;
-    myBar.style.backgroundColor = "gray";
-    const dateInput = document.getElementById('myDate');
-    dateInput.value = '';
-    dateStarted = undefined;
-  }
-});
-
-//Add Commission 
-let addCommission = (title, description, status, width, color, date) => {
-  
-  const xhr = new XMLHttpRequest();
-  xhr.onreadystatechange = () => {
-    if (xhr.readyState == 4 && xhr.status == 201) {
-      const newCommission = JSON.parse(xhr.responseText);
-      data.push(newCommission);
-      refreshCommissions();
-    }
-  };
-  xhr.open('POST', `${api}/commissions`, true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.send(JSON.stringify({ title, description, status , width, color, date}));
-};
-
-//Refresh Commissions
-let refreshCommissions = () => {
-  commissions.innerHTML = '';
-  data
-    .sort((a, b) => b.id - a.id)
-    .map((x) => {
-      return (commissions.innerHTML += `
-        <div id="commission-${x.id}">
-          <span class="fw-bold fs-4">${x.title}</span>
-          <pre class="text-secondary ps-12">${x.description}</pre>
-          <span class = "fs-6">Date Started: ${x.date}</span>
-          <span class="fw-bold fs-5.2">${x.status}</span>
-
-          <div id="myProgress">
-          <span id="myBarStored" style = "width: ${x.width}%; background-color: ${x.color};" ></div>
-        </span>
-  
-          <span class="options">
-            <i onClick="tryEditCommission(${x.id})" data-bs-toggle="modal" data-bs-target="#modal-edit" class="fas fa-edit"></i>
-            <i onClick="deleteCommission(${x.id})" class="fas fa-trash-alt"></i>
-          </span>
-        </div>
-    `);
-    });
-
-  resetForm();
-};
-
-//Try Edit Commission
-let tryEditCommission = (id) => {
-  const commission = data.find((x) => x.id === id);
-  selectedCommission = commission;
-  commissionId.innerText = commission.id;
-  titleEditInput.value = commission.title;
-  descEditInput.value = commission.description;
-  statusEdit = commission.status;
-  percentEdit = commission.width;
-  colorEdit = commission.color;
-  dateEdit= commission.date;
-  document.getElementById('msg').innerHTML = '';
-};
-
-//Update Modal Dropdown
-document.querySelector('[aria-labelledby="dropdownEdit"]').addEventListener('click', (e) => {
-if (e.target.classList.contains('dropdown-item') && e.target.getAttribute('key') === '2') {
-  statusEdit = e.target.innerText; 
-
-  let value = e.target.getAttribute('value');
-
-const progressBarWidths = {
-    1: "15", 
-    2: "25", 
-    3: "50",
-    4: "75",
-    5: "100"  
-};
-
-const colorMap = {
-  1: "red",
-  2: "yellow",
-  3: "teal",
-  4: "blue",
-  5: "green"
-};
-
-percentEdit = progressBarWidths[value];
-colorEdit = colorMap[value];
-}
-});
-
-//Form Update/Edit Submit
-document.getElementById('form-edit').addEventListener('submit', (e) => {
-  e.preventDefault();
-
-  if (!titleEditInput.value) {
-    msg.innerHTML = 'Commission cannot be blank';
   } else {
-    editCommission(titleEditInput.value, descEditInput.value, statusEdit, percentEdit, colorEdit, dateEdit);
+    if (dateStarted === undefined || dateStarted === '') {
+      dateStarted = "N/A, Payment Received";
+    }
 
-    //Close Modal
-    let edit = document.getElementById('edit');
-    edit.setAttribute('data-bs-dismiss', 'modal');
-    edit.click();
-    (() => {
-      edit.setAttribute('data-bs-dismiss', '');
-    })();
+    const commissionData = {
+      title: titleInput.value,
+      description: descInput.value,
+      status: statusChoice,
+      width: barPercent,
+      color: barColor,
+      date: dateStarted
+    };
 
-    //Reset Commission Status Selection
-    document.getElementById('dropdownAdd').innerHTML = "Select a status";
-    const myBar = document.getElementById("myBar")
-    myBar.style.width = 0;
-    myBar.style.backgroundColor = "gray";
+    console.log(commissionData);
+
+    try {
+      const response = await fetch(`${api}/commissions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(commissionData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add commission');
+      }
+      refreshCommissions();
+
+      // Close Modal
+      let add = document.getElementById('add');
+      add.setAttribute('data-bs-dismiss', 'modal');
+      add.click();
+      (() => {
+        add.setAttribute('data-bs-dismiss', '');
+      })();
+
+      // Reset the Text and Progress Bar
+      document.getElementById('dropdownAdd').innerHTML = "Select a status";
+      const myBar = document.getElementById("myBar");
+      myBar.style.width = 0;
+      myBar.style.backgroundColor = "gray";
+      const dateInput = document.getElementById('myDate');
+      dateInput.value = '';
+      dateStarted = undefined;
+    } catch (error) {
+      console.error('Error adding commission:', error);
+    }
   }
 });
 
-
-let editCommission = (title, description, status, width, color, date) => {
-  const xhr = new XMLHttpRequest();
-  xhr.onreadystatechange = () => {
-    if (xhr.readyState == 4 && xhr.status == 200) {
-      selectedCommission.title = title;
-      selectedCommission.description = description;
-      selectedCommission.status = status;
-      selectedCommission.width = width;
-      selectedCommission.color = color;
-      selectedCommission.date = date;
-      refreshCommissions();
-    }
-  };
-  xhr.open('PUT', `${api}/commissions/${selectedCommission.id}`, true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.send(JSON.stringify({ title, description, status, width, color, date }));
-};
-
-let deleteCommission = (id) => {
-  const xhr = new XMLHttpRequest();
-  xhr.onreadystatechange = () => {
-    if (xhr.readyState == 4 && xhr.status == 200) {
-      data = data.filter((x) => x.id !== id);
-      refreshCommissions();
-    }
-  };
-  xhr.open('DELETE', `${api}/commissions/${id}`, true);
-  xhr.send();
-};
-
-let resetForm = () => {
-  titleInput.value = '';
-  descInput.value = '';
-  statusChoice = undefined;
-  barPercent = '0';
-  barColor = 'gray'
-};
-
-let getCommissions = () => {
-  const xhr = new XMLHttpRequest();
-  xhr.onreadystatechange = () => {
-    if (xhr.readyState == 4 && xhr.status == 200) {
-      data = JSON.parse(xhr.responseText) || [];
-      refreshCommissions();
-    }
-  };
-  xhr.open('GET', `${api}/commissions`, true);
-  xhr.send();
-};
-
-(() => {
-  getCommissions();
-})();
-
+//BAR STUFF
 //Add Modal Functions
 function updateText(option) {
   const dropdownButton = document.getElementById("dropdownAdd");
