@@ -34,6 +34,13 @@ const api = 'http://localhost:8000';
 function tryAdd() {
   let msg = document.getElementById('msg');
   msg.innerHTML = '';
+
+  if (deadline && dateStarted && deadline < dateStarted) {
+    msg.innerHTML = 'Deadline cannot be before the start date';
+    // Prevent the modal from closing
+    let add = document.getElementById('add');
+    add.removeAttribute('data-bs-dismiss');
+  }
 }
 
 // Listen for adding
@@ -131,9 +138,18 @@ document.getElementById('form-add').addEventListener('submit', (e) => {
     document.getElementById('msg').innerHTML = 'Commission title cannot be blank';
   } else if (statusChoice === undefined) {
     document.getElementById('msg').innerHTML = 'Commission status cannot be blank';
+  } else if (deadline && dateStarted && deadline < dateStarted) {
+    document.getElementById('msg').innerHTML = 'Deadline cannot be before the start date';
+    // Prevent the modal from closing
+    let add = document.getElementById('add');
+    add.removeAttribute('data-bs-dismiss');
   } else {
-    if (dateStarted === undefined || dateStarted === '') {
-      dateStarted = "N/A, Payment Received";
+    if (!dateStarted || dateStarted === '') {
+      let today = new Date();
+      let day = String(today.getDate()).padStart(2, '0');
+      let month = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+      let year = today.getFullYear();
+      dateStarted = `${year}-${month}-${day}`;
     }
     addCommission(titleInput.value, descInput.value, statusChoice, barPercent, barColor, dateStarted, deadline);
     // Close Modal
@@ -155,10 +171,18 @@ document.getElementById('form-add').addEventListener('submit', (e) => {
   }
 });
 
+
 let addCommission = (title, description, status, width, color, date, deadline) => {
   // Check if the deadline is undefined and set it to "N/A"
   if (deadline === undefined) {
     deadline = "N/A";
+  }
+
+  // Check if the start date is not set or if it's after the deadline date
+  if (date === undefined || new Date(date) > new Date(deadline)) {
+    // Show an error message to the user
+    document.getElementById('msg').innerHTML = 'Please set a valid start date before setting a deadline.';
+    return; // Exit the function
   }
 
   const xhr = new XMLHttpRequest();
@@ -167,12 +191,26 @@ let addCommission = (title, description, status, width, color, date, deadline) =
       const newCommission = JSON.parse(xhr.responseText);
       data.push(newCommission);
       refreshCommissions();
+
+      // Reset the Text and Progress Bar
+      const myBar = document.getElementById("myBar")
+      statusChoice = undefined;
+      myBar.style.width = 0;
+      myBar.style.backgroundColor = "gray";
+      const dateInput = document.getElementById('myDate');
+      dateInput.value = '';
+      dateStarted = undefined;
+
+      // Close Modal
+      let add = document.getElementById('add');
+      add.click();
     }
   };
   xhr.open('POST', `${api}/commissions`, true);
   xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
   xhr.send(JSON.stringify({ title, description, status , width, color, date, deadline }));
 };
+
 
 
 // Refresh commissions list// Listen for adding
@@ -189,7 +227,9 @@ document.getElementById('addNew').addEventListener('click', () => {
   const today = new Date();
   const formattedDate = today.toISOString().split('T')[0]; // Extract YYYY-MM-DD part
   document.getElementById('myDate').value = formattedDate;
-  document.getElementById('deadline').value = ''; // Set deadline input to blank
+
+  // Set the deadline input to blank
+  document.getElementById('deadline').value = '';
 });
 
 let refreshCommissions = () => {
@@ -244,16 +284,31 @@ let tryEditCommission = (id) => {
   statusEdit = commission.status;
   percentEdit = commission.width;
   colorEdit = commission.color;
-  dateEdit= commission.date;
-  deadlineEdit =  commission.deadline;
+  dateEdit = commission.date;
+  deadlineEdit = commission.deadline;
 
   // Update the deadline date selection to the selected deadline date
-  document.getElementById('deadlineUpdate').value = commission.deadline || ''; 
+  document.getElementById('deadlineUpdate').value = commission.deadline || '';
   document.getElementById('myDateUpdate').value = commission.date;
   // Set the commission status and update the progress bar color
   document.getElementById('dropdownEdit').innerText = commission.status;
   updateProgressBar2(commission.status);
   document.getElementById('msg').innerHTML = '';
+
+  // Check if the edited deadline is before the start date
+  if (deadlineEdit && dateEdit && deadlineEdit < dateEdit) {
+    // Display error message
+    document.getElementById('msg-edit').innerHTML = 'Deadline cannot be before the start date';
+    // Prevent the modal from closing
+    let edit = document.getElementById('edit');
+    edit.removeAttribute('data-bs-dismiss');
+  } else {
+    // Clear any previous error message
+    document.getElementById('msg-edit').innerHTML = '';
+    // Allow the modal to close
+    let edit = document.getElementById('edit');
+    edit.setAttribute('data-bs-dismiss', 'modal');
+  }
 };
 
 
@@ -291,6 +346,11 @@ document.getElementById('form-edit').addEventListener('submit', (e) => {
 
   if (!titleEditInput.value) {
     msg.innerHTML = 'Commission cannot be blank';
+  } else if (deadlineEdit && dateEdit && deadlineEdit < dateEdit) {
+    msg.innerHTML = 'Deadline cannot be before the start date';
+    // Prevent the modal from closing
+    let edit = document.getElementById('edit');
+    edit.removeAttribute('data-bs-dismiss');
   } else {
     editCommission(titleEditInput.value, descEditInput.value, statusEdit, percentEdit, colorEdit, dateEdit, deadlineEdit);
 
@@ -304,11 +364,12 @@ document.getElementById('form-edit').addEventListener('submit', (e) => {
 
     // Reset Commission Status Selection
     document.getElementById('dropdownAdd').innerHTML = "Select a status";
-    const myBar = document.getElementById("myBar")
+    const myBar = document.getElementById("myBar");
     myBar.style.width = 0;
     myBar.style.backgroundColor = "gray";
   }
 });
+
 
 
 let editCommission = (title, description, status, width, color, date, deadline) => {
@@ -321,7 +382,7 @@ let editCommission = (title, description, status, width, color, date, deadline) 
       selectedCommission.width = width;
       selectedCommission.color = color;
       selectedCommission.date = date;
-      selectedCommission.deadline = deadline; 
+      selectedCommission.deadline = deadline;
       refreshCommissions();
     }
   };
