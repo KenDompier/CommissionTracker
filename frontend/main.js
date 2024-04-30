@@ -306,8 +306,16 @@ let tryEditCommission = (id) => {
   document.getElementById('myDateUpdate').value = commission.date;
   // Set the commission status and update the progress bar color
   document.getElementById('dropdownEdit').innerText = commission.status;
-  updateProgressBar2(commission.status);
+  updateProgressBar2(commission.status); // Update progress bar color initially
   document.getElementById('msg2').innerHTML = '';
+
+  // Listen for changes in commission status
+  document.querySelector('[aria-labelledby="dropdownEdit"]').addEventListener('click', (e) => {
+    if (e.target.classList.contains('dropdown-item') && e.target.getAttribute('key') === '2') {
+      statusEdit = e.target.innerText; // Update the commission status
+      updateProgressBar2(statusEdit); // Update progress bar color when status changes
+    }
+  });
 
   // Check if the edited deadline is before the start date
   if (deadlineEdit && dateEdit && deadlineEdit < dateEdit) {
@@ -324,6 +332,8 @@ let tryEditCommission = (id) => {
     edit.setAttribute('data-bs-dismiss', 'modal');
   }
 };
+
+
 
 // Update Modal Dropdown
 document.querySelector('[aria-labelledby="dropdownEdit"]').addEventListener('click', (e) => {
@@ -595,8 +605,6 @@ function squashSquishEasing(t) {
 
 
 
-
-
 function getBackgroundColor(option) {
   // Define color mappings based on options (you can customize this)
   const colorMap = {
@@ -629,17 +637,17 @@ function updateTextEdit(option) {
 function updateProgressBar2(option) {
   const myBar = document.getElementById("myBarEdit");
   const progressBarWidths = {
-    A: "15%", 
-    B: "25%", 
-    C: "50%",
-    D: "75%",
-    E: "100%"  
+    'Paid / Starting': "15%", 
+    'Sketch Completed': "25%", 
+    'Lineart Completed': "50%",
+    'Coloring Completed': "75%",
+    'Completed': "100%"  
   };
 
   const targetWidth = parseFloat(progressBarWidths[option]);
   let currentWidth = parseFloat(myBar.style.width) || 0;
 
-  // Calculate the difference in widths between the current and new statuses
+  // Calculate the difference in widths between the current and target widths
   const widthDifference = currentWidth - targetWidth;
 
   // Animate the decrease in width with squash and squish effect
@@ -664,7 +672,8 @@ function updateProgressBar2(option) {
       clearInterval(animationInterval);
     }
   }, stepDuration);
-  
+
+  // Set the background color
   myBar.style.backgroundColor = getBackgroundColor2(option);
 }
 
@@ -675,17 +684,19 @@ function squashSquishEasing(t) {
 
 
 function getBackgroundColor2(option) {
-  // Define color mappings based on options (you can customize this)
+  // Define color mappings based on options
   const colorMap = {
-      A: "red",
-      B: "yellow",
-      C: "teal",
-      D: "blue",
-      E: "green"
+    'Paid / Starting': "red",
+    'Sketch Completed': "yellow",
+    'Lineart Completed': "teal",
+    'Coloring Completed': "blue",
+    'Completed': "green"
   };
 
-  return colorMap[option] || "gray"; // Default to gray if option not found
+  // Return the color corresponding to the option, defaulting to gray if not found
+  return colorMap[option] || "gray";
 }
+
 
 function resetProgressBar() {
   const progressBar = document.getElementById("myBar");
@@ -787,5 +798,4 @@ function sortCommissionsByStatus() {
 
   // Refresh the commissions list to apply the new sort order
   refreshCommissions();
-  
 }
