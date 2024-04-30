@@ -113,13 +113,16 @@
                 rows="3"
               ></textarea>
 
-              <div>Commission Started:</div>
-              
-              <input type = "date" id = "myDate">
-
-              <div>Commission Deadline:</div>
-
-              <input type="date" id="deadline">
+              <div class="row">
+                <div class="col-md-6">
+                  <div>Commission Started:</div>
+                  <input type="date" id="myDate" class="form-control">
+                </div>
+                <div class="col-md-6">
+                  <div>Commission Deadline:</div>
+                  <input type="date" id="deadline" class="form-control">
+                </div>
+              </div>
 
                <div>Commission Status</div>
                <div class="dropdown">
@@ -187,7 +190,7 @@
             <form id="form-edit">
               <label for="title-edit">Commission Title</label>
               <input id="title-edit" type="text" class="form-control" name="" />
-              <div id="msg"></div>
+              <div id="msg2"></div>
 
               <label for="desc-edit" class="mt-3">Description</label>
               <textarea
@@ -199,14 +202,17 @@
               ></textarea>
               <div class="mt-3">
 
-                <div>Commission Started:</div>
-                
-                <input type = "date" id = "myDateUpdate">
-              
-                <div>Commission Deadline:</div>
-
-                <input type="date" id="deadlineUpdate">
-
+                <div class="row">
+                  <div class="col-md-6">
+                    <div>Commission Started:</div>
+                    <input type="date" id="myDateUpdate" class="form-control">
+                  </div>
+                  <div class="col-md-6">
+                    <div>Commission Deadline:</div>
+                    <input type="date" id="deadlineUpdate" class="form-control">
+                  </div>
+                </div>
+            
                 <div>Commission Status</div>
                 <div class="dropdown">
                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownEdit" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

@@ -5,7 +5,6 @@ body {
   margin: 0;
   overflow: hidden;
   font-family: sans-serif;
-  background-color: #c8b9e2;
 }
 
 .app {
@@ -18,6 +17,25 @@ body {
   border-radius: 0.5rem;
   padding: 1rem;
   overflow-y: auto;
+}
+
+/* Animated square tile pattern */
+body {
+  background-color: #e3cceb; /* Fallback background color */
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.05) 50%, transparent 50%),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 50%, transparent 50%);
+  background-size: 100px 100px; /* Adjust the size of the squares */
+  animation: slide 8s linear infinite; /* Adjust animation duration and timing function */
+}
+
+@keyframes slide {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 100px 100px; /* Adjust the size of the squares */
+  }
 }
 
 #addNew {
@@ -55,7 +73,6 @@ body {
   border-radius: 3px 5px 5px 3px;
 }
 
-
 .fa-plus {
   background-color: #dea5fb;
   padding: 4px;
@@ -77,7 +94,7 @@ body {
   padding: 5px;
   display: grid;
   gap: 4px;
-} 
+}
 
 #commissions div .options {
   justify-self: left;
@@ -95,6 +112,14 @@ body {
 }
 
 #commissions {
-  max-height: 750px; 
+  max-height: 750px;
   overflow-y: auto;
 }
+
+#form-add .row,
+#form-edit .row {
+  margin-top: 10px; /* Adjust the value as needed */
+}
+
+
+

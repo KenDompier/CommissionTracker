@@ -7,6 +7,8 @@ let titleInput = document.getElementById('title');
 let descInput = document.getElementById('desc');
 let titleEditInput = document.getElementById('title-edit');
 let descEditInput = document.getElementById('desc-edit');
+let msg2 = document.getElementById('msg2');
+
 
 //Date Input
 let dateStarted;
@@ -100,6 +102,18 @@ document.getElementById('delete-all').addEventListener('click', () => {
   // Call the confirmDeleteCommission function to confirm deletion
   confirmDeleteCommission();
 });
+
+// Add event listener for closing the commission modal
+document.getElementById('add').addEventListener('hidden.bs.modal', () => {
+  resetProgressBar(); // Reset the progress bar when modal is closed
+});
+
+// Add event listener for making a new commission
+document.getElementById('addNew').addEventListener('click', () => {
+  resetProgressBar(); // Reset the progress bar when making a new commission
+  // Reset other fields if needed
+});
+
 
 // Listen for User Selection for Commission Status
 document.querySelector('[aria-labelledby="dropdownAdd"]').addEventListener('click', (e) => {
@@ -293,24 +307,23 @@ let tryEditCommission = (id) => {
   // Set the commission status and update the progress bar color
   document.getElementById('dropdownEdit').innerText = commission.status;
   updateProgressBar2(commission.status);
-  document.getElementById('msg').innerHTML = '';
+  document.getElementById('msg2').innerHTML = '';
 
   // Check if the edited deadline is before the start date
   if (deadlineEdit && dateEdit && deadlineEdit < dateEdit) {
     // Display error message
-    document.getElementById('msg-edit').innerHTML = 'Deadline cannot be before the start date';
+    document.getElementById('msg2').innerHTML = 'Deadline cannot be before the start date';
     // Prevent the modal from closing
     let edit = document.getElementById('edit');
     edit.removeAttribute('data-bs-dismiss');
   } else {
     // Clear any previous error message
-    document.getElementById('msg-edit').innerHTML = '';
+    document.getElementById('msg2').innerHTML = '';
     // Allow the modal to close
     let edit = document.getElementById('edit');
     edit.setAttribute('data-bs-dismiss', 'modal');
   }
 };
-
 
 // Update Modal Dropdown
 document.querySelector('[aria-labelledby="dropdownEdit"]').addEventListener('click', (e) => {
@@ -345,9 +358,9 @@ document.getElementById('form-edit').addEventListener('submit', (e) => {
   e.preventDefault();
 
   if (!titleEditInput.value) {
-    msg.innerHTML = 'Commission cannot be blank';
+    msg2.innerHTML = 'Commission cannot be blank';
   } else if (deadlineEdit && dateEdit && deadlineEdit < dateEdit) {
-    msg.innerHTML = 'Deadline cannot be before the start date';
+    msg2.innerHTML = 'Deadline cannot be before the start date';
     // Prevent the modal from closing
     let edit = document.getElementById('edit');
     edit.removeAttribute('data-bs-dismiss');
@@ -369,7 +382,6 @@ document.getElementById('form-edit').addEventListener('submit', (e) => {
     myBar.style.backgroundColor = "gray";
   }
 });
-
 
 
 let editCommission = (title, description, status, width, color, date, deadline) => {
@@ -535,19 +547,55 @@ function updateText(option) {
 }
 
 function updateProgressBar(option) {
-  const myBar = document.getElementById("myBar");
+  const progressBar = document.getElementById("myBar");
   const progressBarWidths = {
-      A: "15%", 
-      B: "25%", 
-      C: "50%",
-      D: "75%",
-      E: "100%"  
+    A: "15%", 
+    B: "25%", 
+    C: "50%",
+    D: "75%",
+    E: "100%"  
   };
 
-  // Set the width and color based on the selected option
-  myBar.style.width = progressBarWidths[option];
-  myBar.style.backgroundColor = getBackgroundColor(option);
+  const targetWidth = parseFloat(progressBarWidths[option]);
+  let currentWidth = parseFloat(progressBar.style.width) || 0;
+
+  // Calculate the difference in widths between the current and new statuses
+  const widthDifference = currentWidth - targetWidth;
+
+  // Animate the decrease in width with squash and squish effect
+  const animationDuration = 1000; // Adjust animation duration as needed (in milliseconds)
+  const animationSteps = 100; // Number of animation steps
+  const stepDuration = animationDuration / animationSteps;
+
+  let stepCount = 0;
+  const animationInterval = setInterval(() => {
+    if (stepCount < animationSteps) {
+      // Calculate the progress using a squash and squish easing function
+      const progress = squashSquishEasing(stepCount / animationSteps);
+
+      // Calculate the new width based on the progress and difference in widths
+      const newWidth = currentWidth - (widthDifference * progress);
+
+      // Update the progress bar width
+      progressBar.style.width = newWidth + '%';
+
+      stepCount++;
+    } else {
+      clearInterval(animationInterval);
+    }
+  }, stepDuration);
+  
+  progressBar.style.backgroundColor = getBackgroundColor(option);
 }
+
+// Squash and squish easing function
+function squashSquishEasing(t) {
+  return (Math.cos((t * Math.PI) + Math.PI) + 1) / 2;
+}
+
+
+
+
 
 function getBackgroundColor(option) {
   // Define color mappings based on options (you can customize this)
@@ -578,7 +626,6 @@ function updateTextEdit(option) {
   updateProgressBar2(option);
 }
 
-// Progress Bar in Edit/Update Modal
 function updateProgressBar2(option) {
   const myBar = document.getElementById("myBarEdit");
   const progressBarWidths = {
@@ -589,10 +636,43 @@ function updateProgressBar2(option) {
     E: "100%"  
   };
 
-  // Set the width and color based on the selected option
-  myBar.style.width = progressBarWidths[option];
+  const targetWidth = parseFloat(progressBarWidths[option]);
+  let currentWidth = parseFloat(myBar.style.width) || 0;
+
+  // Calculate the difference in widths between the current and new statuses
+  const widthDifference = currentWidth - targetWidth;
+
+  // Animate the decrease in width with squash and squish effect
+  const animationDuration = 1000; // Adjust animation duration as needed (in milliseconds)
+  const animationSteps = 100; // Number of animation steps
+  const stepDuration = animationDuration / animationSteps;
+
+  let stepCount = 0;
+  const animationInterval = setInterval(() => {
+    if (stepCount < animationSteps) {
+      // Calculate the progress using a squash and squish easing function
+      const progress = squashSquishEasing(stepCount / animationSteps);
+
+      // Calculate the new width based on the progress and difference in widths
+      const newWidth = currentWidth - (widthDifference * progress);
+
+      // Update the progress bar width
+      myBar.style.width = newWidth + '%';
+
+      stepCount++;
+    } else {
+      clearInterval(animationInterval);
+    }
+  }, stepDuration);
+  
   myBar.style.backgroundColor = getBackgroundColor2(option);
 }
+
+// Squash and squish easing function
+function squashSquishEasing(t) {
+  return (Math.cos((t * Math.PI) + Math.PI) + 1) / 2;
+}
+
 
 function getBackgroundColor2(option) {
   // Define color mappings based on options (you can customize this)
@@ -605,6 +685,12 @@ function getBackgroundColor2(option) {
   };
 
   return colorMap[option] || "gray"; // Default to gray if option not found
+}
+
+function resetProgressBar() {
+  const progressBar = document.getElementById("myBar");
+  progressBar.style.width = '0%'; // Reset width to 0%
+  progressBar.style.backgroundColor = "gray"; // Reset color to default
 }
 
 // Define a variable to track the total size of uploaded files
