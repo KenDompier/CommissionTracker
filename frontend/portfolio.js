@@ -37,6 +37,21 @@ function previewFiles()
   }
 
 
+  document.getElementById('showSignupForm').addEventListener('click', function() {
+    document.getElementById('loginFormContainer').classList.add('hidden');
+    setTimeout(function() {
+        document.getElementById('signupFormContainer').classList.remove('hidden');
+    }, 100); // Add a slight delay to allow the transition to occur smoothly
+});
+
+document.getElementById('showLoginForm').addEventListener('click', function() {
+    document.getElementById('signupFormContainer').classList.add('hidden');
+    setTimeout(function() {
+        document.getElementById('loginFormContainer').classList.remove('hidden');
+    }, 100); // Add a slight delay to allow the transition to occur smoothly
+});
+
+
 function tryAdd() {
     let msg = document.getElementById('msg');
     msg.innerHTML = '';

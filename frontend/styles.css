@@ -124,16 +124,42 @@ body {
 .card {
   width: 400px; /* Adjust the width as needed */
   height: 450px; /* Adjust the height as needed */
+  border: 2px solid #7424cc; /* Apply the purple border */
 }
 
 /* Added padding to the input fields */
-#loginForm input {
+#loginForm input, #signupForm input {
   padding: 8px; /* Adjust the padding as needed */
+  width: 100%; /* Ensuring the inputs fill the width of the container */
+  box-sizing: border-box; /* Including padding in the width calculation */
 }
 
 /* Added margin-top to the login button */
-#loginForm button {
+#loginForm button, #signupForm button {
   margin-top: 15px; /* Adjust the margin as needed */
 }
 
+/* Added margin to labels for consistent alignment */
+#loginForm label, #signupForm label {
+  margin-bottom: 5px; /* Adjust the margin as needed */
+}
 
+.centered-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh; /* Adjusted height for better visual balance */
+}
+
+.hidden {
+  display: none;
+}
+
+.register-button {
+  margin-left: -12px; /* Adjust margin to align with the username label */
+}
+
+/* Purple border */
+.purple-border {
+  border: 2px solid #7424cc;
+}
