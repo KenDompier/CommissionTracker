@@ -8,48 +8,33 @@ let data = [];
 
 const api = 'http://127.0.0.1:8000';
 //used for getting the image
-function previewFiles() 
-    {
-    const preview = document.querySelector("#preview");
-    const files = document.querySelector("input[type=file]").files;
+function previewFiles() {
+  const preview = document.querySelector("#preview");
+  const files = document.querySelector("input[type=file]").files;
 
-    function readAndPreview(file) {
-        const reader = new FileReader();
-        reader.addEventListener(
+  // Clear any previous previews
+  preview.innerHTML = '';
+
+  function readAndPreview(file) {
+      const reader = new FileReader();
+      reader.addEventListener(
           "load",
           () => {
-            const image = new Image();
-            image.height = 100;
-            image.title = file.name;
-            image.src = reader.result;
-            preview.appendChild(image);
-            //console.log(image.src);
-            imgString = image.src;
+              const image = new Image();
+              image.height = 100;
+              image.title = file.name;
+              image.src = reader.result;
+              preview.appendChild(image);
+              imgString = reader.result; // Use reader's result directly
           },
-          false,
-        );
-        reader.readAsDataURL(file);
-        //console.log(file);
-    }
-    if (files) {
-      Array.prototype.forEach.call(files, readAndPreview);
-    }
+          false
+      );
+      reader.readAsDataURL(file);
   }
-
-
-  document.getElementById('showSignupForm').addEventListener('click', function() {
-    document.getElementById('loginFormContainer').classList.add('hidden');
-    setTimeout(function() {
-        document.getElementById('signupFormContainer').classList.remove('hidden');
-    }, 100); // Add a slight delay to allow the transition to occur smoothly
-});
-
-document.getElementById('showLoginForm').addEventListener('click', function() {
-    document.getElementById('signupFormContainer').classList.add('hidden');
-    setTimeout(function() {
-        document.getElementById('loginFormContainer').classList.remove('hidden');
-    }, 100); // Add a slight delay to allow the transition to occur smoothly
-});
+  if (files) {
+      Array.prototype.forEach.call(files, readAndPreview);
+  }
+}
 
 
 function tryAdd() {
@@ -233,3 +218,5 @@ getPortfolios();
       console.error('Error deleting portfolios:', error);
     }
   }
+
+  
