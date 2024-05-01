@@ -50,12 +50,14 @@
 </nav>
 
 <div class="container centered-form">
-    <div class="card p-4 purple-border" id="loginFormContainer"> <!-- Apply the purple-border class here -->
+    <div class="card p-4 purple-border" id="loginFormContainer">
         <h1>Login</h1>
         <form id="loginForm">
             <label for="loginUsername">Username:</label>
             <input type="text" id="loginUsername" name="loginUsername" required>
-            <label for="loginPassword">Password:</label>
+            <div class="mt-2"> 
+                <label for="loginPassword">Password:</label>
+            </div>
             <input type="password" id="loginPassword" name="loginPassword" required>
             <button type="submit" class="btn btn-primary mt-3">Login</button> 
             <div class="mt-2 register-button">
@@ -63,12 +65,14 @@
             </div>
         </form>
     </div>
-    <div class="card p-4 purple-border hidden" id="signupFormContainer"> <!-- Apply the purple-border class here -->
+    <div class="card p-4 purple-border hidden" id="signupFormContainer">
         <h1>Sign Up</h1>
         <form id="signupForm">
             <label for="signupUsername">Username:</label>
             <input type="text" id="signupUsername" name="signupUsername" required>
-            <label for="signupPassword">Password:</label>
+            <div class="mt-2">
+                <label for="signupPassword">Password:</label>
+            </div>
             <input type="password" id="signupPassword" name="signupPassword" required>
             <button type="submit" class="btn btn-primary mt-3">Sign Up</button> 
             <div class="mt-2 register-button">
@@ -77,6 +81,7 @@
         </form>
     </div>
 </div>
+
 
 
 <!-- Bootstrap JS -->
