@@ -121,5 +121,19 @@ body {
   margin-top: 10px; /* Adjust the value as needed */
 }
 
+.card {
+  width: 400px; /* Adjust the width as needed */
+  height: 450px; /* Adjust the height as needed */
+}
+
+/* Added padding to the input fields */
+#loginForm input {
+  padding: 8px; /* Adjust the padding as needed */
+}
+
+/* Added margin-top to the login button */
+#loginForm button {
+  margin-top: 15px; /* Adjust the margin as needed */
+}
 
 

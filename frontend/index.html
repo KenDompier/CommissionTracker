@@ -22,42 +22,42 @@
     <link rel="icon" type="image/x-icon" href="faviconFiremax.ico" />
   </head>
 
-  <!-- Navbar Code-->
   <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container">
-        <a class="navbar-brand" href="#">Commission Tracker</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Commissions</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Portfolio</a>
-            </li>
-            <li class="nav-item">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Payment</a>
-            </li>
-              <li class="nav-item">
-              <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#modal-login">Login</a>
-            </li>
-            
-          </ul>
-        </div>
-      </div>
-    </nav>
+
+<!-- Navbar Code-->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="#">Commission Tracker</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" href="#">Commissions</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="portfolio.html">Portfolio</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="payment.html">Payment</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="login.html">Login</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
 
     <div class="app mx-auto">
 
@@ -279,31 +279,6 @@
   </div>
 </div>
 
-
-<!-- Modal for Login -->
-<div class="modal fade" id="modal-login" tabindex="-1" aria-labelledby="modal-login-title" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modal-login-title">Login</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="login-form">
-          <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username">
-          </div>
-          <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password">
-          </div>
-          <button type="submit" class="btn btn-primary">Login</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
 
     <script src="main.js"></script>
     <script

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Ensure styles.css is linked -->
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" type="image/x-icon" href="faviconFiremax.ico" />
+    
+    <style>
+        .centered-form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80vh; /* Adjusted height for better visual balance */
+        }
+        .hidden {
+            display: none;
+        }
+        .register-button {
+            margin-left: -12px; /* Adjust margin to align with the username label */
+        }
+        /* Added padding to the input fields */
+        #loginForm input, #signupForm input {
+            padding: 8px; /* Adjust the padding as needed */
+            width: 100%; /* Ensuring the inputs fill the width of the container */
+            box-sizing: border-box; /* Including padding in the width calculation */
+        }
+        /* Added margin-top to the login button */
+        #loginForm button, #signupForm button {
+            margin-top: 15px; /* Adjust the margin as needed */
+        }
+        /* Added margin to labels for consistent alignment */
+        #loginForm label, #signupForm label {
+            margin-bottom: 5px; /* Adjust the margin as needed */
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar Code-->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="#">Commission Tracker</a>
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Commissions</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="portfolio.html">Portfolio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="payment.html">Payment</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="login.html">Login</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container centered-form">
+    <div class="card p-4" id="loginFormContainer">
+        <h1>Login</h1>
+        <form id="loginForm">
+            <label for="loginUsername">Username:</label>
+            <input type="text" id="loginUsername" name="loginUsername" required>
+            <label for="loginPassword">Password:</label>
+            <input type="password" id="loginPassword" name="loginPassword" required>
+            <button type="submit" class="btn btn-primary mt-3">Login</button> 
+            <div class="mt-2 register-button">
+                <button type="button" class="btn btn-link" id="showSignupForm">Register</button>
+            </div>
+        </form>
+    </div>
+    <div class="card p-4 hidden" id="signupFormContainer">
+        <h1>Sign Up</h1>
+        <form id="signupForm">
+            <label for="signupUsername">Username:</label>
+            <input type="text" id="signupUsername" name="signupUsername" required>
+            <label for="signupPassword">Password:</label>
+            <input type="password" id="signupPassword" name="signupPassword" required>
+            <button type="submit" class="btn btn-primary mt-3">Sign Up</button> 
+            <div class="mt-2 register-button">
+                <button type="button" class="btn btn-link" id="showLoginForm">Back to Login</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<!-- Your custom JavaScript -->
+<script src="user.js"></script> <!-- You can link your JavaScript file here -->
+<script>
+    document.getElementById('showSignupForm').addEventListener('click', function() {
+        document.getElementById('loginFormContainer').classList.add('hidden');
+        document.getElementById('signupFormContainer').classList.remove('hidden');
+    });
+
+    document.getElementById('showLoginForm').addEventListener('click', function() {
+        document.getElementById('signupFormContainer').classList.add('hidden');
+        document.getElementById('loginFormContainer').classList.remove('hidden');
+    });
+</script>
+</body>
+</html>
