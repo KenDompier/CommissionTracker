@@ -13,7 +13,7 @@ function tryAdd() {
     console.log("works");
   }
 
-  //MONGODB THINGS
+//MONGODB THINGS
 // Function to fetch portys from the backend
 async function getPayments() {
     try {
@@ -29,7 +29,7 @@ async function getPayments() {
     } catch (error) {
       console.error('Error fetching payments:', error);
     }
-  }
+  } 
 
 document.getElementById('form-add').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -70,8 +70,6 @@ document.getElementById('form-add').addEventListener('submit', async (e) => {
 
       } 
   );
-
-
   
   // Function to refresh portys on the UI
   function refreshPayments() {
