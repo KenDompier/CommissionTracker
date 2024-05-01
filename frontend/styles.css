@@ -38,6 +38,26 @@ body {
   }
 }
 
+.logo {
+  margin-top: -2px; /* Adjust the margin-top as needed */
+}
+
+.navbar-brand:hover img {
+  transform: scale(1.1); /* Increase size on hover */
+  transition: transform 0.3s ease; /* Add smooth transition */
+}
+
+.navbar-brand img {
+  transition: transform 0.3s ease; /* Add smooth transition for shrinking */
+}
+
+
+.header-text {
+  vertical-align: middle;
+  margin-left: 5px; /* Adjust the margin-left as needed */
+}
+
+
 #addNew {
   display: flex;
   justify-content: space-between;
@@ -72,6 +92,26 @@ body {
   height: 30px;
   border-radius: 3px 5px 5px 3px;
 }
+
+/* Add space between Commission Started / Deadline inputs and Commission Status header */
+#form-add .col-md-6 {
+  margin-bottom: 10px;
+}
+
+#form-add label[for="desc"] {
+  margin-top: 20px; 
+}
+
+/* Add space between Commission Started / Deadline inputs and Commission Status header in edit commission menu */
+#form-edit .col-md-6 {
+  margin-bottom: 10px; 
+}
+
+#form-edit label[for="desc-edit"] {
+  margin-top: 20px; 
+}
+
+
 
 .fa-plus {
   background-color: #dea5fb;
@@ -111,6 +151,10 @@ body {
   color: red;
 }
 
+#msg2 {
+  color: red;
+}
+
 #commissions {
   max-height: 750px;
   overflow-y: auto;
@@ -142,6 +186,7 @@ body {
 /* Added margin to labels for consistent alignment */
 #loginForm label, #signupForm label {
   margin-bottom: 5px; /* Adjust the margin as needed */
+  
 }
 
 .centered-form {
@@ -162,4 +207,10 @@ body {
 /* Purple border */
 .purple-border {
   border: 4px solid #7424cc;
+}
+
+.hidden {
+  opacity: 0;
+  transform: translateY(-20px); /* Slide up slightly when hidden */
+  pointer-events: none; /* Disable pointer events when hidden */
 }

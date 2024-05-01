@@ -69,3 +69,18 @@ async function signupUser(username, password) {
     }
     return response.json();
 }
+
+document.getElementById('showSignupForm').addEventListener('click', function() {
+    document.getElementById('loginFormContainer').classList.add('hidden');
+    document.getElementById('signupFormContainer').classList.remove('hidden');
+});
+
+document.getElementById('showLoginForm').addEventListener('click', function() {
+    document.getElementById('signupFormContainer').classList.add('hidden');
+    document.getElementById('loginFormContainer').classList.remove('hidden');
+});
+
+document.getElementById('forgotPasswordButton').addEventListener('click', function() {
+    // Open a new window that covers the screen asking for an email
+    const forgotPasswordWindow = window.open('forgot_password.html', 'forgotPasswordWindow', 'width=600,height=400,left=100,top=100');
+});

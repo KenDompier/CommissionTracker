@@ -34,16 +34,22 @@ let selectedCommissionId; // To store the ID of the commission to be deleted
 const api = 'http://localhost:8000';
 
 function tryAdd() {
+  console.log('tryAdd function called');
   let msg = document.getElementById('msg');
   msg.innerHTML = '';
 
+  console.log('deadline:', deadline);
+  console.log('dateStarted:', dateStarted);
+
   if (deadline && dateStarted && deadline < dateStarted) {
+    console.log('Deadline is before the start date');
     msg.innerHTML = 'Deadline cannot be before the start date';
     // Prevent the modal from closing
     let add = document.getElementById('add');
     add.removeAttribute('data-bs-dismiss');
   }
 }
+
 
 // Listen for adding
 document.getElementById('addNew').addEventListener('click', () => {
@@ -62,7 +68,11 @@ document.getElementById('addNew').addEventListener('click', () => {
 
   // Set the deadline input to blank
   document.getElementById('deadline').value = '';
+
+  // Set dateStarted to today's date
+  dateStarted = formattedDate;
 });
+
 
 // Listen for Date Selection
 document.getElementById('myDate').addEventListener('change', function(event) {
@@ -309,29 +319,16 @@ let tryEditCommission = (id) => {
   updateProgressBar2(commission.status); // Update progress bar color initially
   document.getElementById('msg2').innerHTML = '';
 
-  // Listen for changes in commission status
-  document.querySelector('[aria-labelledby="dropdownEdit"]').addEventListener('click', (e) => {
-    if (e.target.classList.contains('dropdown-item') && e.target.getAttribute('key') === '2') {
-      statusEdit = e.target.innerText; // Update the commission status
-      updateProgressBar2(statusEdit); // Update progress bar color when status changes
-    }
-  });
-
   // Check if the edited deadline is before the start date
   if (deadlineEdit && dateEdit && deadlineEdit < dateEdit) {
     // Display error message
     document.getElementById('msg2').innerHTML = 'Deadline cannot be before the start date';
-    // Prevent the modal from closing
-    let edit = document.getElementById('edit');
-    edit.removeAttribute('data-bs-dismiss');
   } else {
     // Clear any previous error message
     document.getElementById('msg2').innerHTML = '';
-    // Allow the modal to close
-    let edit = document.getElementById('edit');
-    edit.setAttribute('data-bs-dismiss', 'modal');
   }
 };
+
 
 
 
