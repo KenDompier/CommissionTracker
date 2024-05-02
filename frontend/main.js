@@ -27,6 +27,7 @@ let statusEdit;
 let percentEdit;
 let colorEdit;
 
+
 //Data/API
 let data = [];
 let selectedCommission = {};
@@ -117,6 +118,7 @@ document.getElementById('delete-all').addEventListener('click', () => {
 document.getElementById('add').addEventListener('hidden.bs.modal', () => {
   resetProgressBar(); // Reset the progress bar when modal is closed
 });
+
 
 // Add event listener for making a new commission
 document.getElementById('addNew').addEventListener('click', () => {
@@ -365,7 +367,7 @@ document.getElementById('form-edit').addEventListener('submit', (e) => {
   e.preventDefault();
 
   if (!titleEditInput.value) {
-    msg2.innerHTML = 'Commission cannot be blank';
+    msg2.innerHTML = 'Commission title cannot be blank';
   } else if (deadlineEdit && dateEdit && deadlineEdit < dateEdit) {
     msg2.innerHTML = 'Deadline cannot be before the start date';
     // Prevent the modal from closing
@@ -419,6 +421,13 @@ document.getElementById('commissions').addEventListener('change', (event) => {
   }
 });
 
+// Listen for when the add commission modal is closing
+document.getElementById('add').addEventListener('hidden.bs.modal', () => {
+  // Hide or clear the message
+  let msg = document.getElementById('msg');
+  msg.innerHTML = ''; // Clear the message text
+});
+
 // Function to update the state of the "Delete Selected" button
 function updateDeleteButtonState() {
   const deleteButton = document.getElementById('delete-all');
@@ -461,6 +470,13 @@ function confirmDeleteCommission() {
   modalInstance.show();
 }
 
+function playSound(soundName) {
+  const audioElement = document.createElement('audio');
+  audioElement.src = `SFX/${soundName}.mp3`;
+  audioElement.play();
+}
+
+
 // Event listener for confirm delete button in the delete confirmation modal
 document.getElementById('confirm-delete').addEventListener('click', () => {
   // Array to store IDs of selected commissions
@@ -486,21 +502,47 @@ document.getElementById('confirm-delete').addEventListener('click', () => {
   modalInstance.hide();
 });
 
+function playExplosionAnimation(elementId, commissionId) {
+  const explosionImg = document.createElement('img');
+  explosionImg.src = 'Visual/explosion.gif';
+  explosionImg.classList.add('explosion-animation');
+
+  // Find the commission element by ID
+  const commissionElement = document.getElementById(elementId);
+
+  // Replace the commission element with the explosion animation
+  if (commissionElement) {
+    commissionElement.innerHTML = ''; // Clear any content inside the commission element
+    commissionElement.appendChild(explosionImg);
+
+    // Listen for the animationend event to remove the explosion animation and commission box after it finishes playing
+    explosionImg.addEventListener('animationend', () => {
+      explosionImg.remove(); // Remove the explosion animation from the DOM
+      const commissionBox = document.getElementById(`commission-${commissionId}`);
+      if (commissionBox) {
+        commissionBox.remove(); // Remove the commission box from the DOM
+      }
+    }, { once: true }); // Ensure the event listener is triggered only once
+  }
+}
+
+
+
+
 function deleteCommission(id) {
   const xhr = new XMLHttpRequest();
   xhr.onreadystatechange = () => {
     if (xhr.readyState === 4) {
       if (xhr.status === 200) {
+        // Play the explosion sound effect
+        playSound('explosion');
+
+        // Play the explosion animation and remove commission box after animation ends
+        playExplosionAnimation(`commission-${id}`, id);
+
         console.log('Commission successfully deleted from server.');
         // Remove the commission from the data array
         data = data.filter((x) => x.id !== id);
-
-        // Remove the corresponding HTML element from the DOM
-        const commissionElement = document.getElementById(`commission-${id}`);
-        if (commissionElement) {
-          commissionElement.remove();
-          console.log('Commission HTML element removed.');
-        }
 
         // Update the state of the "Delete Selected" button
         updateDeleteButtonState();
@@ -512,6 +554,31 @@ function deleteCommission(id) {
   xhr.open('DELETE', `${api}/commissions/${id}`, true);
   xhr.send();
 }
+
+function playExplosionAnimation(elementId, commissionId) {
+  const explosionImg = document.createElement('img');
+  explosionImg.src = 'Visual/explosion.gif';
+  explosionImg.classList.add('explosion-animation');
+
+  // Find the commission element by ID
+  const commissionElement = document.getElementById(elementId);
+
+  // Replace the commission element with the explosion animation
+  if (commissionElement) {
+    commissionElement.innerHTML = ''; // Clear any content inside the commission element
+    commissionElement.appendChild(explosionImg);
+
+    // Set a timeout to remove the explosion animation and commission box after a delay
+    setTimeout(() => {
+      explosionImg.remove(); // Remove the explosion animation from the DOM
+      const commissionBox = document.getElementById(`commission-${commissionId}`);
+      if (commissionBox) {
+        commissionBox.remove(); // Remove the commission box from the DOM
+      }
+    }, 800); // Adjust the delay as needed to match the duration of the explosion animation
+  }
+}
+
 
 let resetForm = () => {
   titleInput.value = '';
